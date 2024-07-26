@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: dnd-travel-project
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/mapddang?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+    username: root
+    password: 1234
