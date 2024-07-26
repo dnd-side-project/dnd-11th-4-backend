@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: dnd-travel-project
+  profiles:
+    include:
+      - db
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
