@@ -37,5 +37,4 @@ out/
 .vscode/
 
 ### DB ###
-application-*.yml
 **/.DS_Store
