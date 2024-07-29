@@ -1,5 +1,0 @@
-spring:
-  datasource:
-    url: ${{ secrets.MYSQL_URL }}
-    username: ${{ secrets.MYSQL_USERNAME }}
-    password: ${{ secrets.MYSQL_PASSWORD }}
