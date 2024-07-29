@@ -31,7 +31,11 @@ jobs:
       - name: Set yml
         run: |
           cat <<EOF >> src/main/resources/application-db.yml
-          ${{ secrets.APPLICATION_YML }}
+          spring:
+            datasource:
+              url: ${{ secrets.MYSQL_URL }}
+              username: ${{ secrets.MYSQL_USERNAME }}
+              password: ${{ secrets.MYSQL_PASSWORD }}
           EOF
       #gradlew 파일에 실행 권한 부여
       - name: Grant execute permission to gradlew
