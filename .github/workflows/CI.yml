@@ -33,7 +33,7 @@ jobs:
       - name: Set yml
         run: |
           mkdir -p src/main/resources
-          echo "${{ secrets.APPLICATION_YML }}" | base64 --decode > src/main/resources/application.yml
+          echo "${{ secrets.APPLICATION_YML }}" | base64 --decode > src/main/resources/application-db.yml
           find src
       #gradlew 파일에 실행 권한 부여
       - name: Grant execute permission to gradlew
