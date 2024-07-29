@@ -45,11 +45,7 @@ jobs:
           aws-region: ap-northeast-2
       #ZIP 파일을 S3 버킷에 업로드
       - name: Upload to AWS S3
-        run: aws deploy push --application-name ${{ env.AWS_CODE_DEPLOY_APPLICATION }} \
-        --ignore-hidden-files --s3-location s3://${{ env.AWS_S3_BUCKET }}/cicdtest/${{ github.sha }}.zip --source .
+        run: aws deploy push --application-name ${{ env.AWS_CODE_DEPLOY_APPLICATION }} --ignore-hidden-files --s3-location s3://$AWS_S3_BUCKET/cicdtest/$GITHUB_SHA.zip --source .
       #업로드된 ZIP 파일을 CodeDeploy로 배포
       - name: AWS Code Deploy
-        run: aws deploy create-deployment --application-name ${{ env.AWS_CODE_DEPLOY_APPLICATION }} \
-        --deployment-config-name CodeDeployDefault.AllAtOnce \
-        --deployment-group-name ${{ env.AWS_CODE_DEPLOY_GROUP }} \
-        --s3-location bucket=${{ env.AWS_S3_BUCKET }},key=cicdtest/${{ github.sha }}.zip,bundleType=zip
+        run: aws deploy create-deployment --application-name ${{ env.AWS_CODE_DEPLOY_APPLICATION }} --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name ${{ env.AWS_CODE_DEPLOY_GROUP }} --s3-location bucket=$AWS_S3_BUCKET,key=cicdtest/$GITHUB_SHA.zip,bundleType=zip
