@@ -43,9 +43,6 @@ jobs:
           aws-access-key-id: ${{ secrets.EC2_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.EC2_SECRET_KEY }}
           aws-region: ap-northeast-2
-      #ZIP 파일로 압축(.git 제외)
-      - name: Create ZIP file
-          run: zip -r release.zip . -x "*.git*"
       #ZIP 파일을 S3 버킷에 업로드
       - name: Upload to AWS S3
         run: aws deploy push --application-name ${{ env.AWS_CODE_DEPLOY_APPLICATION }} \
