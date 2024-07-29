@@ -27,9 +27,6 @@ jobs:
           #JDK 17 설정
           java-version: '17'
           distribution: 'corretto'
-      #Gradle 설정
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
       #gradlew 파일에 실행 권한 부여
       - name: Grant execute permission to gradlew
         run: chmod +x ./gradlew
