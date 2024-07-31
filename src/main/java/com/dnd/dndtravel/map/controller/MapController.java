@@ -14,7 +14,7 @@ public class MapController {
 
 	private final MapService mapService;
 
-	@GetMapping("/map/all")
+	@GetMapping("/maps")
 	public RegionResponse map() {
 		return mapService.allRegions();
 	}
