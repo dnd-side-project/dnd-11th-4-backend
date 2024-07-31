@@ -4,11 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -28,21 +31,45 @@ class MapServiceTest {
 	@Mock
 	private MapRepository mapRepository;
 
-	@Test
-	void 전체_지역정보를_조회한다() {
+	@ParameterizedTest
+	@MethodSource("provideRegionsForTesting")
+	void 전체_지역정보를_조회한다(List<Region> regions, int expectedVisitCount, int expectedRegionCount) {
 		// given
-		List<Region> mockRegions = List.of(
-			Region.of("서울특별시", Opacity.TWO),
-			Region.of("부산", Opacity.ZERO),
-			Region.of("충청도", Opacity.THREE)
-		);
-		given(mapRepository.findAll()).willReturn(mockRegions);
+		given(mapRepository.findAll()).willReturn(regions);
 
 		// when
 		RegionResponse actual = sut.allRegions();
 
 		// then
-		assertThat(actual.regions().size()).isEqualTo(3);
-		assertThat(actual.visitCount()).isEqualTo(2);
+		assertThat(actual.regions().size()).isEqualTo(expectedRegionCount);
+		assertThat(actual.visitCount()).isEqualTo(expectedVisitCount);
+	}
+
+	private static Stream<Arguments> provideRegionsForTesting() {
+		return Stream.of(
+			// 빈 리스트
+			Arguments.of(List.of(), 0, 0),
+
+			// 모든 지역이 방문되지 않은 경우
+			Arguments.of(List.of(
+				Region.of("서울특별시", Opacity.ZERO),
+				Region.of("부산", Opacity.ZERO),
+				Region.of("충청도", Opacity.ZERO)
+			), 0, 3),
+
+			// 모든 지역이 방문된 경우
+			Arguments.of(List.of(
+				Region.of("서울특별시", Opacity.ONE),
+				Region.of("부산", Opacity.ONE),
+				Region.of("충청도", Opacity.ONE)
+			), 3, 3),
+
+			// 일부 지역만 방문된 경우
+			Arguments.of(List.of(
+				Region.of("서울특별시", Opacity.ONE),
+				Region.of("부산", Opacity.ZERO),
+				Region.of("충청도", Opacity.ONE)
+			), 2, 3)
+		);
 	}
 }
