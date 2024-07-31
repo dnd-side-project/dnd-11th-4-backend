@@ -8,6 +8,6 @@ public record RegionDto(
 ) {
 
 	public static RegionDto from(Region region) {
-		return new RegionDto(region.getName(), region.getOpacity().toInt());
+		return new RegionDto(region.getName(), region.getVisitOpacity().toInt());
 	}
 }

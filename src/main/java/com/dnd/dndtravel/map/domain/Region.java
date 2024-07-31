@@ -22,18 +22,18 @@ public class Region {
 	private String name; // 지역 이름
 
 	@Enumerated(EnumType.STRING)
-	private Opacity opacity; // 방문 횟수(색의 opacity)
+	private VisitOpacity visitOpacity; // 방문 횟수(색의 opacity)
 
-	public static Region of(String name, Opacity opacity) {
-		return new Region(name, opacity);
+	public static Region of(String name, VisitOpacity visitOpacity) {
+		return new Region(name, visitOpacity);
 	}
 
 	public boolean isVisited() {
-		return opacity.isNotZero();
+		return visitOpacity.isNotZero();
 	}
 
-	private Region(String name, Opacity opacity) {
+	private Region(String name, VisitOpacity visitOpacity) {
 		this.name = name;
-		this.opacity = opacity;
+		this.visitOpacity = visitOpacity;
 	}
 }
