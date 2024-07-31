@@ -4,6 +4,14 @@ spring:
   profiles:
     include:
       - db
+  datasource:
+    url: ${MYSQL_URL}
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
