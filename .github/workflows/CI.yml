@@ -27,16 +27,6 @@ jobs:
           #JDK 17 설정
           java-version: '17'
           distribution: 'corretto'
-      #yml 파일
-      - name: Set yml
-        run: |
-          cat <<EOF >> src/main/resources/application-db.yml
-          spring:
-            datasource:
-              url: ${{ secrets.MYSQL_URL }}
-              username: ${{ secrets.MYSQL_USERNAME }}
-              password: ${{ secrets.MYSQL_PASSWORD }}
-          EOF
       #gradlew 파일에 실행 권한 부여
       - name: Grant execute permission to gradlew
         run: chmod +x ./gradlew
