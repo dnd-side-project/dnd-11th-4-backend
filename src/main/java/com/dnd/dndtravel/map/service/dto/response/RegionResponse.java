@@ -1,8 +1,8 @@
 package com.dnd.dndtravel.map.service.dto.response;
 
-import java.util.List;
-
 import com.dnd.dndtravel.map.service.dto.RegionDto;
+
+import java.util.List;
 
 public record RegionResponse(
 	List<RegionDto> regions,
