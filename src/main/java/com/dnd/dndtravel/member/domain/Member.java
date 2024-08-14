@@ -22,10 +22,6 @@ public class Member {
     @Column(nullable = false)
     private String email;
 
-    private String accessToken;
-
-    private String refreshToken;
-
     public static Member from(String name, String email){
         return Member.builder()
                 .name(name)
