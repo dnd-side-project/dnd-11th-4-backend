@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -28,12 +27,6 @@ public class AuthToken {
     @Column(nullable = false)
     private String refreshToken;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
-    @Column(nullable = false)
-    private LocalDateTime expiredAt;
-
     @Builder
     private AuthToken(Long memberId, String accessToken, String refreshToken){
         this.memberId = memberId;
@@ -49,16 +42,8 @@ public class AuthToken {
                 .build();
     }
 
-    @PrePersist
-    public void onPrePersist() {
-        this.createdAt = LocalDateTime.now();
-        this.expiredAt = this.createdAt.plusYears(1);
-    }
-
     public void reIssuance() {
         this.accessToken = UUID.randomUUID().toString();
         this.refreshToken = UUID.randomUUID().toString();
-        this.createdAt = LocalDateTime.now();
-        this.expiredAt = this.createdAt.plusYears(1);
     }
 }
