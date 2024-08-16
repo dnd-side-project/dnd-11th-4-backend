@@ -12,10 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-
-    @Transactional
+    
     public Member saveMember(String name, String email) {
         return memberRepository.findByEmail(email)
-                .orElseGet(() -> memberRepository.save(Member.from(name, email)));
+                .orElseGet(() -> memberRepository.save(Member.of(name, email)));
     }
 }

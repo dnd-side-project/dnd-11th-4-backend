@@ -1,17 +1,16 @@
 package com.dnd.dndtravel.member.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class Member {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,7 +21,13 @@ public class Member {
     @Column(nullable = false)
     private String email;
 
-    public static Member from(String name, String email){
+    @Builder
+    private Member(String name, String email){
+        this.name = name;
+        this.email = email;
+    }
+
+    public static Member of(String name, String email){
         return Member.builder()
                 .name(name)
                 .email(email)
