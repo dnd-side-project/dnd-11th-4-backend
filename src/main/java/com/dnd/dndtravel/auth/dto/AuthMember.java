@@ -1,9 +1,7 @@
 package com.dnd.dndtravel.auth.dto;
 
-import com.akkin.member.domain.Member;
+import com.dnd.dndtravel.member.domain.Member;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
 
 @Getter
 public class AuthMember {
@@ -14,16 +12,9 @@ public class AuthMember {
 
     private final String email;
 
-    private LocalDateTime createdAt;
-
     public AuthMember(final Member member) {
         this.id = member.getId();
         this.name = member.getName();
         this.email = member.getEmail();
-        this.createdAt = LocalDateTime.now();
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
     }
 }

@@ -6,11 +6,15 @@ import com.dnd.dndtravel.auth.domain.AuthToken;
 import com.dnd.dndtravel.auth.dto.request.AppleLoginRequest;
 import com.dnd.dndtravel.auth.dto.response.TokenResponse;
 import com.dnd.dndtravel.auth.service.AuthTokenService;
-import jakarta.servlet.http.HttpServletRequest;
+import com.dnd.dndtravel.member.domain.Member;
+import com.dnd.dndtravel.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -24,11 +28,10 @@ public class AuthTokenController {
 
     private final AppleOauthService appleOauthService;
 
-    @Override
     @PostMapping("/login/oauth2/apple")
     public ResponseEntity<TokenResponse> appleOauthLogin(@RequestBody final AppleLoginRequest appleLoginRequest) {
         AppleUser appleUser = appleOauthService.createAppleUser(appleLoginRequest.getAppleToken());
-        Member member = memberService.saveOrUpdateMember(appleUser);
+        Member member = memberService.saveMember(appleUser);
         AuthToken authToken = authTokenService.issue(member);
         return ResponseEntity.ok(new TokenResponse(authToken));
     }
