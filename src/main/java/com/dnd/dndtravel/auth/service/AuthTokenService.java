@@ -3,19 +3,18 @@ package com.dnd.dndtravel.auth.service;
 import com.dnd.dndtravel.auth.domain.AuthToken;
 import com.dnd.dndtravel.auth.dto.AuthMember;
 import com.dnd.dndtravel.auth.repository.AuthTokenRepository;
+import com.dnd.dndtravel.member.domain.Member;
+import com.dnd.dndtravel.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 @Service
 public class AuthTokenService {
     private final AuthTokenRepository authTokenRepository;
@@ -29,7 +28,7 @@ public class AuthTokenService {
         final Optional<AuthToken> byMemberId = authTokenRepository.findByMemberId(member.getId());
         AuthToken authToken;
         if (byMemberId.isEmpty()) {
-            authToken = authTokenRepository.save(new AuthToken(member.getId()));
+            authToken = authTokenRepository.save(AuthToken.of(member.getId()));
         } else {
             authToken = byMemberId.get();
             final String accessToken = authToken.getAccessToken();
@@ -42,21 +41,5 @@ public class AuthTokenService {
         final AuthMember authMember = new AuthMember(member);
         accessTokenMap.put(authToken.getAccessToken(), authMember);
         return authToken;
-    }
-
-    public boolean isAccessTokenValid(final LocalDateTime accessTokenCreatedAt) {
-        final LocalDateTime now = LocalDateTime.now();
-        if (Duration.between(accessTokenCreatedAt, now).toSeconds() > 3600) {
-            return false;
-        }
-        return true;
-    }
-
-    public boolean isRefreshTokenValid(final LocalDateTime refreshTokenExpiredAt) {
-        final LocalDateTime now = LocalDateTime.now();
-        if (now.isAfter(refreshTokenExpiredAt)) {
-            return false;
-        }
-        return true;
     }
 }
