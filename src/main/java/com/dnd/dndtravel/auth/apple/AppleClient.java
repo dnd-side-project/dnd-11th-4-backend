@@ -1,6 +1,6 @@
-package com.dnd.dndtravel.apple;
+package com.dnd.dndtravel.auth.apple;
 
-import com.dnd.dndtravel.apple.dto.ApplePublicKeys;
+import com.dnd.dndtravel.auth.apple.dto.ApplePublicKeys;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 

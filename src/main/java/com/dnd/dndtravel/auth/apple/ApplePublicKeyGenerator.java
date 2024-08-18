@@ -1,7 +1,7 @@
-package com.dnd.dndtravel.apple;
+package com.dnd.dndtravel.auth.apple;
 
-import com.dnd.dndtravel.apple.dto.ApplePublicKey;
-import com.dnd.dndtravel.apple.dto.ApplePublicKeys;
+import com.dnd.dndtravel.auth.apple.dto.ApplePublicKey;
+import com.dnd.dndtravel.auth.apple.dto.ApplePublicKeys;
 import org.springframework.stereotype.Component;
 
 import java.math.BigInteger;

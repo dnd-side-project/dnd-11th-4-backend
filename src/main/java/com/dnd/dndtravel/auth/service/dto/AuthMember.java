@@ -1,4 +1,4 @@
-package com.dnd.dndtravel.auth.dto;
+package com.dnd.dndtravel.auth.service.dto;
 
 import com.dnd.dndtravel.member.domain.Member;
 import lombok.Getter;

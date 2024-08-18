@@ -1,4 +1,4 @@
-package com.dnd.dndtravel.apple;
+package com.dnd.dndtravel.auth.apple;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;

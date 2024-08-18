@@ -1,7 +1,7 @@
-package com.dnd.dndtravel.apple;
+package com.dnd.dndtravel.auth.apple;
 
-import com.dnd.dndtravel.apple.dto.ApplePublicKeys;
-import com.dnd.dndtravel.apple.dto.AppleUser;
+import com.dnd.dndtravel.auth.apple.dto.ApplePublicKeys;
+import com.dnd.dndtravel.auth.apple.dto.AppleUser;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

@@ -1,6 +1,5 @@
-package com.dnd.dndtravel.apple.dto;
+package com.dnd.dndtravel.auth.apple.dto;
 
-import com.dnd.dndtravel.apple.dto.ApplePublicKey;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
