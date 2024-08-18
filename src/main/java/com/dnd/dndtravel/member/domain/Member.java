@@ -1,6 +1,6 @@
 package com.dnd.dndtravel.member.domain;
 
-import com.dnd.dndtravel.apple.dto.AppleUser;
+import com.dnd.dndtravel.auth.apple.dto.AppleUser;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

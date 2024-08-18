@@ -1,4 +1,4 @@
-package com.dnd.dndtravel.auth.dto.request;
+package com.dnd.dndtravel.auth.service.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

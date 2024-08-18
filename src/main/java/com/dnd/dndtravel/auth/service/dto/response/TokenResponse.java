@@ -1,4 +1,4 @@
-package com.dnd.dndtravel.auth.dto.response;
+package com.dnd.dndtravel.auth.service.dto.response;
 
 import com.dnd.dndtravel.auth.domain.AuthToken;
 import lombok.Getter;

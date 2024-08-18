@@ -1,4 +1,4 @@
-package com.dnd.dndtravel.apple.dto;
+package com.dnd.dndtravel.auth.apple.dto;
 
 import lombok.Getter;
 

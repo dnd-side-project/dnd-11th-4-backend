@@ -1,10 +1,10 @@
 package com.dnd.dndtravel.auth.controller;
 
-import com.dnd.dndtravel.apple.AppleOauthService;
-import com.dnd.dndtravel.apple.dto.AppleUser;
+import com.dnd.dndtravel.auth.apple.AppleOauthService;
+import com.dnd.dndtravel.auth.apple.dto.AppleUser;
 import com.dnd.dndtravel.auth.domain.AuthToken;
-import com.dnd.dndtravel.auth.dto.request.AppleLoginRequest;
-import com.dnd.dndtravel.auth.dto.response.TokenResponse;
+import com.dnd.dndtravel.auth.service.dto.request.AppleLoginRequest;
+import com.dnd.dndtravel.auth.service.dto.response.TokenResponse;
 import com.dnd.dndtravel.auth.service.AuthTokenService;
 import com.dnd.dndtravel.member.domain.Member;
 import com.dnd.dndtravel.member.service.MemberService;
