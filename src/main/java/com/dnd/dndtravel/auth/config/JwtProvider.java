@@ -36,7 +36,7 @@ public class JwtProvider implements InitializingBean {
     // secretKey 값을 Base64 Decode 해서 key 변수에 할당
     @Override
     public void afterPropertiesSet() {
-        byte[] keyBytes = secretKey.getBytes();
+        byte[] keyBytes = secretKey.getBytes(); //32바이트 이상
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
