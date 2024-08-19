@@ -2,11 +2,9 @@ package com.dnd.dndtravel.auth.repository;
 
 import com.dnd.dndtravel.auth.domain.AuthToken;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
+@Repository
 public interface AuthTokenRepository extends JpaRepository<AuthToken, Long> {
-
-    Optional<AuthToken> findByMemberId(Long memberId);
-
+    void saveRefreshToken(Long memberId, String refreshToken);
 }
