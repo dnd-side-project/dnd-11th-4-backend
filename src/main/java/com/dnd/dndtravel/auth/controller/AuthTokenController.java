@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,8 +29,8 @@ public class AuthTokenController {
     private final AuthTokenRepository authTokenRepository;
 
     @PostMapping("/login/oauth2/apple")
-    public TokenResponse appleOauthLogin(@RequestBody final AppleLoginRequest appleLoginRequest) {
-        AppleUser appleUser = appleOauthService.createAppleUser(appleLoginRequest.getAppleToken());
+    public TokenResponse appleOauthLogin(@RequestBody AppleLoginRequest appleLoginRequest) {
+        AppleUser appleUser = appleOauthService.createAppleUser(appleLoginRequest.appleToken());
         Member member = memberService.saveMember(appleUser);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(member.getId(), null, Collections.emptyList());

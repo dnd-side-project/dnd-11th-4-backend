@@ -1,13 +1,14 @@
 package com.dnd.dndtravel.auth.domain;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@NoArgsConstructor
-public class AuthToken {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class RefreshTokenCollector {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,7 +19,7 @@ public class AuthToken {
     @Column(nullable = false)
     private String refreshToken;
 
-    public AuthToken(Long memberId, String refreshToken) {
+    public RefreshTokenCollector(Long memberId, String refreshToken) {
         this.memberId = memberId;
         this.refreshToken = refreshToken;
     }
