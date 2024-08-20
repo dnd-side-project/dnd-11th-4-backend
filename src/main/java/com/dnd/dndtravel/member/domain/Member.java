@@ -1,5 +1,6 @@
 package com.dnd.dndtravel.member.domain;
 
+import com.dnd.dndtravel.auth.apple.dto.AppleUser;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -27,10 +28,10 @@ public class Member {
         this.email = email;
     }
 
-    public static Member of(String name, String email){
+    public static Member of(AppleUser appleUser) {
         return Member.builder()
-                .name(name)
-                .email(email)
+                .name(appleUser.getName())
+                .email(appleUser.getEmail())
                 .build();
     }
 }
