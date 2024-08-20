@@ -87,6 +87,7 @@ public class JwtProvider implements InitializingBean {
             Jwts.parser().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (SecurityException | MalformedJwtException e) {
+            // 커스텀 예외 처리
             System.out.println("잘못된 JWT Signature");
         } catch (ExpiredJwtException e) {
             System.out.println("만료된 JWT 토큰");

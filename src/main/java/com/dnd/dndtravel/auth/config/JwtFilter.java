@@ -15,7 +15,8 @@ import org.springframework.web.filter.GenericFilterBean;
 @RequiredArgsConstructor
 public class JwtFilter extends GenericFilterBean {
 
-    public static final String ACCESS_HEADER= "Authorization";
+    private static final String ACCESS_HEADER= "Authorization";
+    private static final int BEARER_SPLIT = 7;
     private final JwtProvider jwtProvider;
 
     @Override
@@ -29,6 +30,7 @@ public class JwtFilter extends GenericFilterBean {
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         else {
+            //예외 처리
             System.out.println("유효한 jwt 토큰이 없습니다. uri: " + requestURI);
         }
 
@@ -40,7 +42,7 @@ public class JwtFilter extends GenericFilterBean {
         String bearerToken = request.getHeader(ACCESS_HEADER);
 
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
+            return bearerToken.substring(BEARER_SPLIT);
         }
 
         return null;
