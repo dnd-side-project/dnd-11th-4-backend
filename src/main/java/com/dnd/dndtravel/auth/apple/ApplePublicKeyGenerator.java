@@ -19,24 +19,24 @@ public class ApplePublicKeyGenerator {
     private static final String KEY_ID_HEADER = "kid";
     private static final int POSITIVE_SIGN_NUMBER = 1;
 
-    public PublicKey generate(final Map<String, String> headers, final ApplePublicKeys publicKeys) {
-        final ApplePublicKey applePublicKey = publicKeys.getMatchingKey(
+    public PublicKey generate(Map<String, String> headers, ApplePublicKeys publicKeys) {
+        ApplePublicKey applePublicKey = publicKeys.getMatchingKey(
                 headers.get(SIGN_ALGORITHM_HEADER),
                 headers.get(KEY_ID_HEADER)
         );
         return generatePublicKey(applePublicKey);
     }
 
-    private PublicKey generatePublicKey(final ApplePublicKey applePublicKey) {
-        final byte[] nBytes = Base64.getUrlDecoder().decode(applePublicKey.getN());
-        final byte[] eBytes = Base64.getUrlDecoder().decode(applePublicKey.getE());
+    private PublicKey generatePublicKey(ApplePublicKey applePublicKey) {
+        byte[] nBytes = Base64.getUrlDecoder().decode(applePublicKey.n());
+        byte[] eBytes = Base64.getUrlDecoder().decode(applePublicKey.e());
 
-        final BigInteger n = new BigInteger(POSITIVE_SIGN_NUMBER, nBytes);
-        final BigInteger e = new BigInteger(POSITIVE_SIGN_NUMBER, eBytes);
-        final RSAPublicKeySpec rsaPublicKeySpec = new RSAPublicKeySpec(n, e);
+        BigInteger n = new BigInteger(POSITIVE_SIGN_NUMBER, nBytes);
+        BigInteger e = new BigInteger(POSITIVE_SIGN_NUMBER, eBytes);
+        RSAPublicKeySpec rsaPublicKeySpec = new RSAPublicKeySpec(n, e);
 
         try {
-            final KeyFactory keyFactory = KeyFactory.getInstance(applePublicKey.getKty());
+            KeyFactory keyFactory = KeyFactory.getInstance(applePublicKey.kty());
             return keyFactory.generatePublic(rsaPublicKeySpec);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException exception) {
             throw new RuntimeException("잘못된 애플 키");
