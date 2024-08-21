@@ -22,10 +22,9 @@ JWK 리스트 조회
 public class AppleTokenParser {
     private static final String IDENTITY_TOKEN_VALUE_DELIMITER = "\\.";
     private static final int HEADER_INDEX = 0;
-
     private final ObjectMapper objectMapper;
 
-    public Map<String, String> parseHeader(final String appleToken) {
+    public Map<String, String> parseHeader(String appleToken) {
         try {
             final String decodedHeader = appleToken.split(IDENTITY_TOKEN_VALUE_DELIMITER)[HEADER_INDEX];
             return objectMapper.readValue(decodedHeader, Map.class);
@@ -36,13 +35,13 @@ public class AppleTokenParser {
         }
     }
 
-    public Claims extractClaims(final String appleToken, final PublicKey publicKey) {
+    public Claims extractClaims(String appleToken, PublicKey publicKey) {
         try {
             return Jwts.parser()
-                    .verifyWith(publicKey)
-                    .build()
-                    .parseSignedClaims(appleToken)
-                    .getPayload();
+                .verifyWith(publicKey)
+                .build()
+                .parseSignedClaims(appleToken)
+                .getPayload();
         } catch (UnsupportedJwtException e) {
             throw new UnsupportedJwtException("지원되지 않는 jwt 타입");
         } catch (IllegalArgumentException e) {
