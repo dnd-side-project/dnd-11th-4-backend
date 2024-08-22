@@ -1,16 +1,14 @@
 package com.dnd.dndtravel.map.service;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.dnd.dndtravel.map.domain.Region;
 import com.dnd.dndtravel.map.repository.MapRepository;
 import com.dnd.dndtravel.map.service.dto.RegionDto;
 import com.dnd.dndtravel.map.service.dto.response.RegionResponse;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
