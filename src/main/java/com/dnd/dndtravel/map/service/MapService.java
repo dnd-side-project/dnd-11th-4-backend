@@ -15,33 +15,20 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class MapService {
-	private final RegionRepository regionRepository;
-	private final MemberRepository memberRepository;
-	private final MemberRegionRepository memberRegionRepository;
 
-	// 모든 지역 조회(홈)
+	private final MapRepository mapRepository;
+
 	@Transactional(readOnly = true)
-	public RegionResponse allRegions(Long memberId) {
-		//todo custom ex
-		Member member = memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException("존재하지 않는 유저"));
+	public RegionResponse allRegions() {
+		List<Region> all = mapRepository.findAll();
 
-		// 유저의 지역 방문기록 전부 가져온다
-		List<MemberRegion> memberRegions = memberRegionRepository.findByMemberId(memberId);
-		List<RegionDto> regions = regionRepository.findAll().stream()
+		List<RegionDto> regions = all.stream()
 			.map(RegionDto::from)
 			.toList();
+		int visitCount = (int)all.stream()
+			.filter(Region::isVisited)
+			.count();
 
-		if (memberRegions.isEmpty()) {
-			return new RegionResponse(regions, member.getSelectedColor());
-		}
-
-		return new RegionResponse(
-			updateRegionDto(regions, memberRegions),
-			(int)memberRegions.stream()
-				.filter(MemberRegion::isVisited)
-				.count(),
-			member.getSelectedColor()
-		);
-	}
+		return new RegionResponse(regions, visitCount);
 	}
 }
