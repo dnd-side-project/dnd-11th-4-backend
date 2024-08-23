@@ -2,7 +2,6 @@ package com.dnd.dndtravel.map.service;
 
 import com.dnd.dndtravel.map.domain.Region;
 import com.dnd.dndtravel.map.domain.VisitOpacity;
-import com.dnd.dndtravel.map.repository.MapRepository;
 import com.dnd.dndtravel.map.service.dto.response.RegionResponse;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
