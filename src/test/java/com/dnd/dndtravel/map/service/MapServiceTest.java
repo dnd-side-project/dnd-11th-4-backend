@@ -15,8 +15,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.dndtravel.map.domain.Region;
-import com.dnd.dndtravel.map.service.dto.response.RegionResponse;
+// import com.dnd.dndtravel.map.domain.Region;
+// import com.dnd.dndtravel.map.domain.Region;
+// import com.dnd.dndtravel.map.service.dto.response.RegionResponse;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @ExtendWith(MockitoExtension.class)
