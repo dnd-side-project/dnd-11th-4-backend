@@ -1,9 +1,9 @@
 package com.dnd.dndtravel.map.service.dto.response;
 
-import java.util.List;
-
 import com.dnd.dndtravel.map.service.dto.RegionDto;
 import com.dnd.dndtravel.member.domain.SelectedColor;
+
+import java.util.List;
 
 public record RegionResponse(
 	List<RegionDto> regions, // 지역별 opacity 정보, 땅 이름

@@ -1,11 +1,9 @@
 package com.dnd.dndtravel.map.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
-
-import java.util.List;
-import java.util.stream.Stream;
-
+import com.dnd.dndtravel.map.domain.Region;
+import com.dnd.dndtravel.map.domain.VisitOpacity;
+import com.dnd.dndtravel.map.repository.MapRepository;
+import com.dnd.dndtravel.map.service.dto.response.RegionResponse;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,10 +12,11 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import java.util.List;
+import java.util.stream.Stream;
 
-// import com.dnd.dndtravel.map.domain.Region;
-// import com.dnd.dndtravel.map.domain.Region;
-// import com.dnd.dndtravel.map.service.dto.response.RegionResponse;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @ExtendWith(MockitoExtension.class)
