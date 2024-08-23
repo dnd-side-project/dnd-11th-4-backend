@@ -8,9 +8,21 @@ on:
 
 env:
   AWS_REGION: ap-northeast-2
-  AWS_S3_BUCKET: mapddang-s3
+  AWS_S3_BUCKET: ${{ secrets.AWS_BUCKET_NAME }}
   AWS_CODE_DEPLOY_APPLICATION: mapddang-CD
   AWS_CODE_DEPLOY_GROUP: mapddang-CD-group
+  MYSQL_URL: ${{ secrets.MYSQL_URL }}
+  MYSQL_USERNAME: ${{ secrets.MYSQL_USERNAME }}
+  MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+  APPLE_CLIENT_ID: ${{ secrets.APPLE_CLIENT_ID }}
+  APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
+  APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+  APPLE_PRIVATE_KEY: ${{ secrets.APPLE_PRIVATE_KEY }}
+  JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+  ACCESS_TOKEN_EXPIRE: ${{ secrets.ACCESS_TOKEN_EXPIRE }}
+  REFRESH_TOKEN_EXPIRE: ${{ secrets.REFRESH_TOKEN_EXPIRE }}
+  AWS_S3_ACCESS_KEY: ${{ secrets.AWS_S3_ACCESS_KEY }}
+  AWS_S3_SECRET_KEY: ${{ secrets.AWS_S3_SECRET_KEY }}
 
 jobs:
   build-with-gradle:
@@ -30,19 +42,29 @@ jobs:
       #gradlew 파일에 실행 권한 부여
       - name: Grant execute permission to gradlew
         run: chmod +x ./gradlew
-      #프로젝트 빌드(test 제외)
+      #프로젝트 빌드
       - name: Build Project
-        run: ./gradlew clean build -x test
+        run: ./gradlew build
       #AWS 자격증명 설정
       - name: Setup AWS credential
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.EC2_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.EC2_SECRET_KEY }}
+          aws-access-key-id: ${{ secrets.AWS_S3_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_S3_SECRET_KEY }}
           aws-region: ap-northeast-2
       #ZIP 파일을 S3 버킷에 업로드
       - name: Upload to AWS S3
-        run: aws deploy push --application-name ${{ env.AWS_CODE_DEPLOY_APPLICATION }} --ignore-hidden-files --s3-location s3://$AWS_S3_BUCKET/cicdtest/$GITHUB_SHA.zip --source .
+        run: |
+          aws deploy push \
+            --application-name ${{ env.AWS_CODE_DEPLOY_APPLICATION }} \
+            --ignore-hidden-files \
+            --s3-location s3://$AWS_S3_BUCKET/cicdtest/$GITHUB_SHA.zip \
+            --source
       #업로드된 ZIP 파일을 CodeDeploy로 배포
       - name: AWS Code Deploy
-        run: aws deploy create-deployment --application-name ${{ env.AWS_CODE_DEPLOY_APPLICATION }} --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name ${{ env.AWS_CODE_DEPLOY_GROUP }} --s3-location bucket=$AWS_S3_BUCKET,key=cicdtest/$GITHUB_SHA.zip,bundleType=zip
+        run: |
+          aws deploy create-deployment \
+          --application-name ${{ env.AWS_CODE_DEPLOY_APPLICATION }} \
+          --deployment-config-name CodeDeployDefault.AllAtOnce \
+          --deployment-group-name ${{ env.AWS_CODE_DEPLOY_GROUP }} \
+          --s3-location bucket=$AWS_S3_BUCKET,bundleType=zip,key=cicdtest/$GITHUB_SHA.zip
