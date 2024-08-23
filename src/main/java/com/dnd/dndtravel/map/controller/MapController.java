@@ -20,6 +20,7 @@ public class MapController {
 	@Operation(summary = "전체 지역 조회", description = "전체 지역 방문 횟수를 조회합니다.")
 	@GetMapping("/maps")
 	public RegionResponse map() {
-		return mapService.allRegions();
+		Long memberId = 1L;
+		return mapService.allRegions(memberId);
 	}
 }
