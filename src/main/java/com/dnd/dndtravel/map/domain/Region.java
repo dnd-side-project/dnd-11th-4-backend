@@ -21,19 +21,15 @@ public class Region {
 
 	private String name; // 지역 이름
 
-	@Enumerated(EnumType.STRING)
-	private VisitOpacity visitOpacity; // 방문 횟수(색의 opacity)
-
-	public static Region of(String name, VisitOpacity visitOpacity) {
-		return new Region(name, visitOpacity);
+	public static Region of(String name) {
+		return new Region(name);
 	}
 
-	public boolean isVisited() {
-		return visitOpacity.isNotZero();
-	}
-
-	private Region(String name, VisitOpacity visitOpacity) {
+	private Region(String name) {
 		this.name = name;
-		this.visitOpacity = visitOpacity;
+	}
+
+	public boolean isEqualTo(String name) {
+		return this.name.equals(name);
 	}
 }

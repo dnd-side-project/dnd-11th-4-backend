@@ -1,6 +1,5 @@
 package com.dnd.dndtravel.member.domain;
 
-import com.dnd.dndtravel.auth.apple.dto.AppleUser;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -22,16 +21,21 @@ public class Member {
     @Column(nullable = false)
     private String email;
 
+    @Enumerated(EnumType.STRING)
+    private SelectedColor selectedColor; // 유저가 선택한 컬러
+
     @Builder
-    private Member(String name, String email){
+    private Member(String name, String email, SelectedColor selectedColor) {
         this.name = name;
         this.email = email;
+        this.selectedColor = selectedColor;
     }
 
-    public static Member of(AppleUser appleUser) {
+    public static Member of(String userName, String email, String selectedColor) {
         return Member.builder()
-                .name(appleUser.getName())
-                .email(appleUser.getEmail())
-                .build();
+            .name(userName)
+            .email(email)
+            .selectedColor(SelectedColor.convertToEnum(selectedColor))
+            .build();
     }
 }

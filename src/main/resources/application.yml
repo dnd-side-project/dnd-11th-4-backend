@@ -1,19 +1,37 @@
 spring:
   application:
     name: dnd-travel-project
-  profiles:
-    include:
-      - db
   datasource:
     url: ${MYSQL_URL}
     username: ${MYSQL_USERNAME}
     password: ${MYSQL_PASSWORD}
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
   jpa:
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
-  jwt:
-    secret-key: ${JWT_SECRET_KEY}
+    open-in-view: false
+
+social-login:
+  provider:
+    apple:
+      grant-type: authorization_code
+      client-id: ${APPLE_CLIENT_ID}
+      key-id: ${APPLE_KEY_ID} # 애플에서 제공하는 키의 ID
+      team-id: ${APPLE_TEAM_ID} # 애플 개발자 계정의 팀 ID
+      audience: https://appleid.apple.com
+      private-key: ${APPLE_PRIVATE_KEY}
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+  access-token-expired-ms: ${ACCESS_TOKEN_EXPIRE}
+  refresh-token-expired-ms: ${REFRESH_TOKEN_EXPIRE}
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_S3_ACCESS_KEY}
+      secretKey: ${AWS_S3_SECRET_KEY}
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+    s3:
+      bucketName: ${AWS_BUCKET_NAME}
+
