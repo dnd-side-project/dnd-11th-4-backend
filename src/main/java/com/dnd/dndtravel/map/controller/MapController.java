@@ -16,6 +16,7 @@ public class MapController {
 
 	@GetMapping("/maps")
 	public RegionResponse map() {
-		return mapService.allRegions();
+		Long memberId = 1L;
+		return mapService.allRegions(memberId);
 	}
 }
