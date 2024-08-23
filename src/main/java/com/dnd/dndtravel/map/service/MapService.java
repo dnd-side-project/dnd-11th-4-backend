@@ -6,11 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.dndtravel.map.domain.Region;
-import com.dnd.dndtravel.map.repository.MemberRegionRepository;
-import com.dnd.dndtravel.map.repository.RegionRepository;
+import com.dnd.dndtravel.map.repository.MapRepository;
 import com.dnd.dndtravel.map.service.dto.RegionDto;
 import com.dnd.dndtravel.map.service.dto.response.RegionResponse;
-import com.dnd.dndtravel.member.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
 
