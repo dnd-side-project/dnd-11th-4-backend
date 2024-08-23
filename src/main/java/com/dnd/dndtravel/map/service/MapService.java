@@ -60,4 +60,5 @@ public class MapService {
 				return regionDto;
 			})
 			.toList();
+	}
 }
