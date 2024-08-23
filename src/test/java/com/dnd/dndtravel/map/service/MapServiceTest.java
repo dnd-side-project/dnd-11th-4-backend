@@ -16,6 +16,9 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import com.dnd.dndtravel.map.domain.MemberRegion;
+import com.dnd.dndtravel.map.repository.MemberRegionRepository;
+import com.dnd.dndtravel.map.repository.RegionRepository;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @ExtendWith(MockitoExtension.class)
@@ -24,6 +27,14 @@ class MapServiceTest {
 	@InjectMocks
 	private MapService sut;
 
+	@Mock
+	private MemberRepository memberRepository;
+
+	@Mock
+	private RegionRepository regionRepository;
+
+	@Mock
+	private MemberRegionRepository memberRegionRepository;
 
 	@ParameterizedTest
 	@MethodSource("provideRegionsForTesting")
