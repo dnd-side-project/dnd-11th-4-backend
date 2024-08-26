@@ -37,6 +37,7 @@ public class MemberAttraction {
 	private LocalDate localDate; // 방문 날짜
 	private String region; // 지역
 	private int photosCount; // 사진 개수, 필요한가?
+	//todo 명소 이름도 필요할지도?
 
 	@Builder
 	private MemberAttraction(Member member, Attraction attraction, String memo, LocalDate localDate, String region,
@@ -58,12 +59,5 @@ public class MemberAttraction {
 			.localDate(localDate)
 			.region(region)
 			.build();
-	}
-
-	public void update(String region, String attraction, String memo, LocalDate localDate) {
-		this.region = region;
-		// this.attraction = attraction;
-		this.memo = memo;
-		this.localDate = localDate;
 	}
 }
