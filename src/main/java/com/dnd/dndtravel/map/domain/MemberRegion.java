@@ -40,15 +40,23 @@ public class MemberRegion {
 		this.visitCount = visitCount;
 	}
 
-	public static MemberRegion of(Member member, Region region, int visitCount) {
+	public static MemberRegion of(Member member, Region region) {
 		return MemberRegion.builder()
 			.member(member)
 			.region(region)
-			.visitCount(visitCount)
+			.visitCount(1)
 			.build();
 	}
 
 	public boolean isVisited() {
 		return this.visitCount > 0;
+	}
+
+	public boolean isEqualRegion(String regionName) {
+		return this.region.getName().equals(regionName);
+	}
+
+	public void addVisitCount() {
+		this.visitCount++;
 	}
 }
