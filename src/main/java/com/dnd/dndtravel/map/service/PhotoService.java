@@ -61,16 +61,9 @@ public class PhotoService {
 	private String uploadImageToS3(MultipartFile image) throws IOException {
 		String originalFilename = image.getOriginalFilename(); //원본 파일 명
 		String extension = originalFilename.substring(originalFilename.lastIndexOf(".")); //확장자 명
-
 		String s3FileName = UUID.randomUUID().toString().substring(0,10) + originalFilename; //변경된 파일 명
 
-		// InputStream is = image.getInputStream();
-		// byte[] bytes = IOUtils.toByteArray(is); //image를 byte[]로 변환
-		//
-		// //S3에 요청할 때 사용할 byteInputStream 생성
-		// ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-
-		try(InputStream inputStream = image.getInputStream()) {
+		try (InputStream inputStream = image.getInputStream()) {
 			ObjectMetadata metadata = new ObjectMetadata(); //metadata 생성
 			metadata.setContentType("image/" + extension.substring(1)); // "." 제거
 			metadata.setContentLength(image.getSize());
@@ -78,7 +71,7 @@ public class PhotoService {
 			//S3로 putObject 할 때 사용할 요청 객체
 			//생성자 : bucket 이름, 파일 명, byteInputStream, metadata
 			PutObjectRequest putObjectRequest =
-				new PutObjectRequest(bucketName, s3FileName,inputStream, metadata)
+				new PutObjectRequest(bucketName, s3FileName, inputStream, metadata)
 					.withCannedAcl(CannedAccessControlList.PublicRead);
 
 			//실제로 S3에 이미지 데이터를 넣는 부분이다.
