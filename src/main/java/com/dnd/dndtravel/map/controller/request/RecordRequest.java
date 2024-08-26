@@ -5,14 +5,17 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.dnd.dndtravel.map.controller.request.validation.RegionCondition;
+import com.dnd.dndtravel.map.controller.request.validation.RegionEnum;
 import com.dnd.dndtravel.map.dto.RecordDto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-
+//todo 회의 후 제약조건 변경 필요
 public record RecordRequest(
+	@RegionEnum(enumClass = RegionCondition.class)
 	String region,
 
 	@NotBlank(message = "명소 이름은 필수 입력 사항입니다.")
