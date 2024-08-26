@@ -42,4 +42,21 @@ public class JwtProvider {
             .signWith(Keys.hmacShaKeyFor(Base64.getDecoder().decode(this.secretKey)))
             .compact();
     }
+
+    public Claims parseClaims(String splitHeader) {
+        Jws<Claims> claims;
+        try {
+            claims = Jwts.parser()
+                    .verifyWith(Keys.hmacShaKeyFor(Base64.getDecoder().decode(this.secretKey)))
+                    .build()
+                    .parseSignedClaims(splitHeader);
+
+        } catch (ExpiredJwtException e) {
+            throw new RuntimeException("message", e); // 유효하지 않은 토큰
+        } catch (JwtException e) {
+            throw new RuntimeException("message", e); // 토큰 해독 실패
+        }
+
+        return claims.getPayload();
+    }
 }
