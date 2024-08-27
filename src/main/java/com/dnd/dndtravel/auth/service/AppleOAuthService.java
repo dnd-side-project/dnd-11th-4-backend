@@ -2,8 +2,6 @@ package com.dnd.dndtravel.auth.service;
 
 import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.ProtectedHeader;
-import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -49,7 +47,6 @@ import com.dnd.dndtravel.auth.config.AppleProperties;
 public class AppleOAuthService {
     private final AppleClient appleClient;
     private final AppleProperties appleProperties;
-    private final ProtectedHeader protectedHeader;
 
     public AppleIdTokenPayload get(String authorizationCode) {
         String idToken = appleClient.getIdToken(
@@ -66,7 +63,7 @@ public class AppleOAuthService {
         LocalDateTime expiration = LocalDateTime.now().plusMinutes(5);
 
         return Jwts.builder()
-            .header().add(protectedHeader.getKeyId(), appleProperties.getKeyId()).and()
+            .header().add(JwsHeader.KEY_ID, appleProperties.getKeyId()).and()
             .issuer(appleProperties.getTeamId())
             .audience().add(appleProperties.getAudience()).and()
             .subject(appleProperties.getClientId())
