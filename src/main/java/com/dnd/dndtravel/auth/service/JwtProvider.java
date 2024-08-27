@@ -6,6 +6,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.Base64;
 import java.util.Date;
 
 import javax.crypto.SecretKey;
@@ -49,7 +50,7 @@ public class JwtProvider {
         Jws<Claims> claims;
         try {
             claims = Jwts.parser()
-                    .verifyWith(Keys.hmacShaKeyFor(Base64.getDecoder().decode(this.secretKey)))
+                    .verifyWith(Keys.hmacShaKeyFor(Base64.getDecoder().decode(String.valueOf(this.secretKey))))
                     .build()
                     .parseSignedClaims(splitHeader);
 
