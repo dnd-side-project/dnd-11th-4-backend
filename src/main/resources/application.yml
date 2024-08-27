@@ -7,6 +7,8 @@ spring:
     password: ${MYSQL_PASSWORD}
   jpa:
     open-in-view: false
+    hibernate:
+      ddl-auto: create # local에서만 사용할거고, prod 환경과 분리 필요
 
 social-login:
   provider:
