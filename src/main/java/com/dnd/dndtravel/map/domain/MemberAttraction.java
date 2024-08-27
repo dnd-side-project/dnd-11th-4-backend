@@ -1,5 +1,7 @@
 package com.dnd.dndtravel.map.domain;
 
+import java.time.LocalDate;
+
 import com.dnd.dndtravel.member.domain.Member;
 
 import jakarta.persistence.Entity;
@@ -17,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class MemberRegion {
+public class MemberAttraction {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,35 +30,34 @@ public class MemberRegion {
 	private Member member;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "region_id")
-	private Region region;
+	@JoinColumn(name = "attraction_id")
+	private Attraction attraction;
 
-	private int visitCount; // 방문 횟수
+	private String memo; // 방문기록 메모
+	private LocalDate localDate; // 방문 날짜
+	private String region; // 지역
+	private int photosCount; // 사진 개수, 필요한가?
+	//todo 명소 이름도 필요할지도?
 
 	@Builder
-	private MemberRegion(Member member, Region region, int visitCount) {
+	private MemberAttraction(Member member, Attraction attraction, String memo, LocalDate localDate, String region,
+		int photosCount) {
 		this.member = member;
+		this.attraction = attraction;
+		this.memo = memo;
+		this.localDate = localDate;
 		this.region = region;
-		this.visitCount = visitCount;
+		this.photosCount = photosCount;
 	}
 
-	public static MemberRegion of(Member member, Region region) {
-		return MemberRegion.builder()
+	public static MemberAttraction of(Member member, Attraction attraction, String memo, LocalDate localDate,
+		String region) {
+		return MemberAttraction.builder()
 			.member(member)
+			.attraction(attraction)
+			.memo(memo)
+			.localDate(localDate)
 			.region(region)
-			.visitCount(1)
 			.build();
-	}
-
-	public boolean isVisited() {
-		return this.visitCount > 0;
-	}
-
-	public boolean isEqualRegion(String regionName) {
-		return this.region.getName().equals(regionName);
-	}
-
-	public void addVisitCount() {
-		this.visitCount++;
 	}
 }

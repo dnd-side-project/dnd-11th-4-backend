@@ -6,30 +6,37 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.dnd.dndtravel.map.domain.Photo;
+import com.dnd.dndtravel.map.dto.RecordDto;
+import com.dnd.dndtravel.map.domain.Attraction;
+import com.dnd.dndtravel.map.domain.MemberAttraction;
 import com.dnd.dndtravel.map.domain.MemberRegion;
+import com.dnd.dndtravel.map.domain.Region;
+import com.dnd.dndtravel.map.service.dto.RegionDto;
+import com.dnd.dndtravel.map.service.dto.response.RegionResponse;
+import com.dnd.dndtravel.map.repository.AttractionRepository;
+import com.dnd.dndtravel.map.repository.MemberAttractionRepository;
 import com.dnd.dndtravel.map.repository.MemberRegionRepository;
+import com.dnd.dndtravel.map.repository.PhotoRepository;
 import com.dnd.dndtravel.map.repository.RegionRepository;
 
 import com.dnd.dndtravel.member.domain.Member;
 import com.dnd.dndtravel.member.repository.MemberRepository;
 
-import com.dnd.dndtravel.map.domain.Region;
-import com.dnd.dndtravel.map.service.dto.RegionDto;
-import com.dnd.dndtravel.map.service.dto.response.RegionResponse;
-
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class MapService {
+	private final PhotoService photoService;
 	private final RegionRepository regionRepository;
 	private final MemberRepository memberRepository;
+	private final AttractionRepository attractionRepository;
+	private final MemberAttractionRepository memberAttractionRepository;
 	private final MemberRegionRepository memberRegionRepository;
+	private final PhotoRepository photoRepository;
 
 	@Transactional(readOnly = true)
 	public RegionResponse allRegions(Long memberId) {
@@ -54,12 +61,33 @@ public class MapService {
 			member.getSelectedColor()
 		);
 	}
+
+	@Transactional
+	public void recordAttraction(RecordDto recordDto, Long memberId) {
+		// validate
+		Region region = regionRepository.findByName(recordDto.region()).orElseThrow(() -> new RuntimeException("존재하지 않는 지역"));
+		Member member = memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException("존재하지 않는 유저"));
+
+		// 명소 체크후, 새 명소면 DB에 저장
+		Attraction attraction = attractionRepository.findByName(recordDto.attractionName())
+			.orElseGet(() -> attractionRepository.save(Attraction.of(region, recordDto.attractionName())));
+
+		// 유저가 이미 기록한적 없는 방문명소면 DB에 저장
+		MemberAttraction memberAttraction = recordMemberAttraction(recordDto, attraction, member);
+
+		// 사진 업로드
+		savePhotos(recordDto.photos(), memberAttraction);
+
+		// 방문횟수 업데이트
+		updateRegionVisitCount(member, region);
+	}
+
 	private List<RegionDto> updateRegionDto(List<RegionDto> regions, List<MemberRegion> memberRegions) {
 		return regions.stream()
 			.map(regionDto -> {
 				String regionName = regionDto.name();
 				Optional<MemberRegion> innerMemberRegion = memberRegions.stream()
-					.filter(memberRegion -> memberRegion.getRegion().isEqualTo(regionName))
+					.filter(memberRegion -> memberRegion.isEqualRegion(regionName))
 					.findFirst();
 
 				if (innerMemberRegion.isPresent() && innerMemberRegion.get().isVisited()) {
@@ -68,5 +96,34 @@ public class MapService {
 				return regionDto;
 			})
 			.toList();
+	}
+
+	private MemberAttraction recordMemberAttraction(RecordDto recordDto, Attraction attraction, Member member) {
+		MemberAttraction memberAttraction = memberAttractionRepository.findByAttractionIdAndMemberId(
+			attraction.getId(), member.getId());
+
+		if (memberAttraction == null) {
+			memberAttraction = MemberAttraction.of(member, attraction, recordDto.memo(),
+				recordDto.dateTime(), recordDto.region());
+			memberAttractionRepository.save(memberAttraction);
+		}
+		return memberAttraction;
+	}
+
+	private void updateRegionVisitCount(Member member, Region region) {
+		MemberRegion memberRegion = memberRegionRepository.findByMemberIdAndRegionId(member.getId(),
+			region.getId());
+		if (memberRegion == null) {
+			memberRegionRepository.save(MemberRegion.of(member, region));
+		} else {
+			memberRegion.addVisitCount();
+		}
+	}
+
+	private void savePhotos(List<MultipartFile> photos, MemberAttraction memberAttractionEntity) {
+		for (MultipartFile photo : photos) {
+			String imageUrl = photoService.upload(photo);
+			photoRepository.save(Photo.of(memberAttractionEntity, imageUrl));
+		}
 	}
 }
