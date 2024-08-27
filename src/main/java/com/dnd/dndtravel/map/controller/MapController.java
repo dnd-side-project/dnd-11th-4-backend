@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dnd.dndtravel.map.controller.request.RecordRequest;
+import com.dnd.dndtravel.map.controller.request.validation.PhotoValidation;
 import com.dnd.dndtravel.map.service.MapService;
 import com.dnd.dndtravel.map.service.dto.response.RegionResponse;
 
@@ -33,7 +34,7 @@ public class MapController {
 
 	@PostMapping("/maps/record")
 	public void memo(
-		@RequestPart("photos") List<MultipartFile> photos,
+		@PhotoValidation @RequestPart("photos") List<MultipartFile> photos,
 		@RequestPart("recordRequest") RecordRequest recordRequest
 	) {
 		Long memberId = 1L;
