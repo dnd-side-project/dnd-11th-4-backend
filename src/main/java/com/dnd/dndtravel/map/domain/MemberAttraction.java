@@ -37,27 +37,29 @@ public class MemberAttraction {
 	private LocalDate localDate; // 방문 날짜
 	private String region; // 지역
 	private int photosCount; // 사진 개수, 필요한가?
-	//todo 명소 이름도 필요할지도?
+	private String attractionName; // 명소 이름
 
 	@Builder
 	private MemberAttraction(Member member, Attraction attraction, String memo, LocalDate localDate, String region,
-		int photosCount) {
+		int photosCount, String attractionName) {
 		this.member = member;
 		this.attraction = attraction;
 		this.memo = memo;
 		this.localDate = localDate;
 		this.region = region;
 		this.photosCount = photosCount;
+		this.attractionName = attractionName;
 	}
 
 	public static MemberAttraction of(Member member, Attraction attraction, String memo, LocalDate localDate,
-		String region) {
+		String region, String attractionName) {
 		return MemberAttraction.builder()
 			.member(member)
 			.attraction(attraction)
 			.memo(memo)
 			.localDate(localDate)
 			.region(region)
+			.attractionName(attractionName)
 			.build();
 	}
 }
