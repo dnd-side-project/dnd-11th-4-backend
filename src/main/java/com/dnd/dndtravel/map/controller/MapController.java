@@ -80,7 +80,7 @@ public class MapController {
 	}
 
 	// 기록 삭제
-	@DeleteMapping("/maps/history/{record_id}")
+	@DeleteMapping("/maps/history/{recordId}")
 	public void deleteRecord(
 		@PathVariable long recordId
 	) {
