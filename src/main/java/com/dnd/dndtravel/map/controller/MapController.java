@@ -3,6 +3,7 @@ package com.dnd.dndtravel.map.controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dnd.dndtravel.map.controller.request.RecordRequest;
+import com.dnd.dndtravel.map.controller.request.UpdateRecordRequest;
 import com.dnd.dndtravel.map.controller.request.validation.PhotoValidation;
 import com.dnd.dndtravel.config.AuthenticationMember;
 import com.dnd.dndtravel.map.service.MapService;
@@ -66,4 +68,13 @@ public class MapController {
 		return mapService.findOneVisitRecord(memberId, recordId);
 	}
 
+	@PutMapping("/maps/history/{recordId}")
+	public void updateRecord(
+		@PathVariable long recordId,
+		@PhotoValidation @RequestPart("photos") List<MultipartFile> photos,
+		@RequestPart("updateRecordRequest") UpdateRecordRequest updateRecordRequest
+	) {
+		long memberId = 1L;
+		mapService.updateVisitRecord(updateRecordRequest.toDto(photos), memberId, recordId);
+	}
 }

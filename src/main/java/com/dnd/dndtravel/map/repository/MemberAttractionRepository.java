@@ -1,6 +1,7 @@
 package com.dnd.dndtravel.map.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,5 +12,7 @@ public interface MemberAttractionRepository extends JpaRepository<MemberAttracti
 	MemberAttractionRepositoryCustom {
 
 	List<MemberAttraction> findByMemberId(long memberId);
+
+	Optional<MemberAttraction> findByIdAndMemberId(long memberId, long memberAttractionId);
 }
 
