@@ -147,6 +147,9 @@ public class MapService {
 		//validation
 		MemberAttraction memberAttraction = memberAttractionRepository.findByIdAndMemberId(memberAttractionId, memberId)
 			.orElseThrow(() -> new RuntimeException("유효하지 않은 방문 상세 기록"));
+
+		List<Photo> photos = photoRepository.findByMemberAttractionId(memberAttraction.getId());
+		photoRepository.deleteAll(photos);
 		memberAttractionRepository.delete(memberAttraction);
 		attractionRepository.deleteById(memberAttraction.getAttraction().getId());
 	}
