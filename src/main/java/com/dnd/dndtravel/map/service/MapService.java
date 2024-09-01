@@ -1,8 +1,9 @@
 package com.dnd.dndtravel.map.service;
 
-
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +15,10 @@ import com.dnd.dndtravel.map.domain.Attraction;
 import com.dnd.dndtravel.map.domain.MemberAttraction;
 import com.dnd.dndtravel.map.domain.MemberRegion;
 import com.dnd.dndtravel.map.domain.Region;
+import com.dnd.dndtravel.map.repository.dto.projection.AttractionPhotoProjection;
+import com.dnd.dndtravel.map.repository.dto.projection.RecordProjection;
 import com.dnd.dndtravel.map.service.dto.RegionDto;
+import com.dnd.dndtravel.map.service.dto.response.AttractionRecordResponse;
 import com.dnd.dndtravel.map.service.dto.response.RegionResponse;
 import com.dnd.dndtravel.map.repository.AttractionRepository;
 import com.dnd.dndtravel.map.repository.MemberAttractionRepository;
@@ -39,7 +43,7 @@ public class MapService {
 	private final PhotoRepository photoRepository;
 
 	@Transactional(readOnly = true)
-	public RegionResponse allRegions(Long memberId) {
+	public RegionResponse allRegions(long memberId) {
 		//todo custom ex
 		Member member = memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException("존재하지 않는 유저"));
 
@@ -63,7 +67,7 @@ public class MapService {
 	}
 
 	@Transactional
-	public void recordAttraction(RecordDto recordDto, Long memberId) {
+	public void recordAttraction(RecordDto recordDto, long memberId) {
 		// validate
 		Region region = regionRepository.findByName(recordDto.region()).orElseThrow(() -> new RuntimeException("존재하지 않는 지역"));
 		Member member = memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException("존재하지 않는 유저"));
@@ -72,14 +76,52 @@ public class MapService {
 		Attraction attraction = attractionRepository.findByName(recordDto.attractionName())
 			.orElseGet(() -> attractionRepository.save(Attraction.of(region, recordDto.attractionName())));
 
-		// 유저가 이미 기록한적 없는 방문명소면 DB에 저장
-		MemberAttraction memberAttraction = recordMemberAttraction(recordDto, attraction, member);
+		MemberAttraction memberAttraction = memberAttractionRepository.save(
+			MemberAttraction.of(member, attraction, recordDto.memo(),
+				recordDto.dateTime(), recordDto.region()));
 
 		// 사진 업로드
 		savePhotos(recordDto.photos(), memberAttraction);
 
 		// 방문횟수 업데이트
 		updateRegionVisitCount(member, region);
+	}
+
+	// 모든 기록 조회
+	@Transactional(readOnly = true)
+	public List<AttractionRecordResponse> allRecords(long memberId, long cursorNo, int displayPerPage) {
+		//validation
+		Member member = memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException("존재하지 않는 유저"));
+		List<MemberAttraction> memberAttractions = memberAttractionRepository.findByMemberId(memberId);
+		if (memberAttractions.isEmpty()) {
+			return List.of();
+		}
+
+		// 첫 커서값인 경우
+		if (cursorNo <= 0) {
+			cursorNo = memberAttractionRepository.maxCursor(member.getId());
+		}
+		List<RecordProjection> attractionRecords = memberAttractionRepository.findAttractionRecords(memberId, cursorNo, displayPerPage);
+
+		// 명소명 저장
+		attractionRecords.forEach(RecordProjection::inputAttractionNames);
+		// 사진 URL 저장
+		setPhotoUrlsWithJoin(attractionRecords);
+
+		return attractionRecords.stream()
+			.map(AttractionRecordResponse::from)
+			.toList();
+	}
+
+	private void setPhotoUrlsWithJoin(List<RecordProjection> attractionRecords) {
+		List<AttractionPhotoProjection> attractionPhotos = photoRepository.findByRecordDtos(
+			attractionRecords);
+
+		Map<Long, List<AttractionPhotoProjection>> attractionPhotoIds = attractionPhotos.stream()
+			.collect(Collectors.groupingBy(AttractionPhotoProjection::memberAttractionId));
+
+		attractionRecords.forEach(attractionRecord -> attractionRecord.inputPhotoUrls(
+			attractionPhotoIds.get(attractionRecord.getMemberAttractionId())));
 	}
 
 	private List<RegionDto> updateRegionDto(List<RegionDto> regions, List<MemberRegion> memberRegions) {
@@ -96,18 +138,6 @@ public class MapService {
 				return regionDto;
 			})
 			.toList();
-	}
-
-	private MemberAttraction recordMemberAttraction(RecordDto recordDto, Attraction attraction, Member member) {
-		MemberAttraction memberAttraction = memberAttractionRepository.findByAttractionIdAndMemberId(
-			attraction.getId(), member.getId());
-
-		if (memberAttraction == null) {
-			memberAttraction = MemberAttraction.of(member, attraction, recordDto.memo(),
-				recordDto.dateTime(), recordDto.region());
-			memberAttractionRepository.save(memberAttraction);
-		}
-		return memberAttraction;
 	}
 
 	private void updateRegionVisitCount(Member member, Region region) {

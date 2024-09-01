@@ -8,7 +8,11 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: create # local에서만 사용할거고, prod 환경과 분리 필요
+      ddl-auto: update # local에서만 사용할거고, prod 환경과 분리 필요
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
 
 social-login:
   provider:
