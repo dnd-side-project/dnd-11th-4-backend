@@ -148,6 +148,7 @@ public class MapService {
 		MemberAttraction memberAttraction = memberAttractionRepository.findByIdAndMemberId(memberAttractionId, memberId)
 			.orElseThrow(() -> new RuntimeException("유효하지 않은 방문 상세 기록"));
 		memberAttractionRepository.delete(memberAttraction);
+		attractionRepository.deleteById(memberAttraction.getAttraction().getId());
 	}
 
 	private List<String> updatePhotoToS3(RecordDto dto, List<String> existingUrls) {
