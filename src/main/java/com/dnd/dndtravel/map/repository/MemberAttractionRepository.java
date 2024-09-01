@@ -9,7 +9,7 @@ import com.dnd.dndtravel.map.repository.custom.MemberAttractionRepositoryCustom;
 
 public interface MemberAttractionRepository extends JpaRepository<MemberAttraction, Long>,
 	MemberAttractionRepositoryCustom {
-	MemberAttraction findByAttractionIdAndMemberId(Long attractionId, Long memberId);
 
-	List<MemberAttraction> findByMemberId(Long memberId);
+	List<MemberAttraction> findByMemberId(long memberId);
 }
+

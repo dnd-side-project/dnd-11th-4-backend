@@ -1,12 +1,11 @@
 package com.dnd.dndtravel.map.repository.custom;
 
+import static com.dnd.dndtravel.map.domain.QAttraction.attraction;
 import static com.dnd.dndtravel.map.domain.QMemberAttraction.memberAttraction;
-import static com.dnd.dndtravel.map.domain.QPhoto.photo;
 import static com.dnd.dndtravel.member.domain.QMember.member;
 
 import java.util.List;
 
-import com.dnd.dndtravel.map.repository.dto.projection.AttractionPhotoProjection;
 import com.dnd.dndtravel.map.repository.dto.projection.RecordProjection;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
@@ -28,7 +27,7 @@ public class MemberAttractionRepositoryImpl implements MemberAttractionRepositor
 	 * from memberAttraction ma
 	 */
 	@Override
-	public Long maxCursor(Long memberId) {
+	public Long maxCursor(long memberId) {
 		return jpaQueryFactory.select(memberAttraction.id.max())
 			.from(memberAttraction)
 			.fetchOne();
@@ -44,7 +43,7 @@ public class MemberAttractionRepositoryImpl implements MemberAttractionRepositor
 	 */
 
 	@Override
-	public List<RecordProjection> findAttractionRecords(Long memberId, Long cursorNo, int displayPerPage) {
+	public List<RecordProjection> findAttractionRecords(long memberId, long cursorNo, int displayPerPage) {
 		return jpaQueryFactory.select(Projections.constructor(RecordProjection.class,
 				memberAttraction.id,
 				ExpressionUtils.as(JPAExpressions
@@ -52,33 +51,17 @@ public class MemberAttractionRepositoryImpl implements MemberAttractionRepositor
 					.from(memberAttraction)
 					.where(memberAttraction.member.id.eq(member.id)), entireRecordCount
 				),
-				memberAttraction.attractionName,
 				memberAttraction.memo,
 				memberAttraction.localDate,
-				memberAttraction.region
+				memberAttraction.region,
+				attraction
 			))
 			.from(memberAttraction)
 			.join(member).on(memberAttraction.member.id.eq(member.id))
-			.where(memberAttraction.member.id.eq(memberId)
-				.and(memberAttraction.id.gt(cursorNo)))
+			.join(attraction).on(memberAttraction.attraction.id.eq(attraction.id))
+			.where(memberAttraction.id.lt(cursorNo))
 			.orderBy(memberAttraction.id.desc())
 			.limit(displayPerPage)
-			.fetch();
-	}
-
-	@Override
-	public List<AttractionPhotoProjection> findByRecordDtos(List<RecordProjection> recordDtos) {
-		List<Long> memberAttractionIds = recordDtos.stream()
-			.map(RecordProjection::getMemberAttractionId)
-			.toList();
-
-		return jpaQueryFactory.select(
-				Projections.constructor(AttractionPhotoProjection.class,
-					memberAttraction.id,
-					photo.url))
-			.from(photo)
-			.join(photo.memberAttraction, memberAttraction)
-			.where(photo.memberAttraction.id.in(memberAttractionIds))
 			.fetch();
 	}
 }

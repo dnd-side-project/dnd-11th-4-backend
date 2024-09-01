@@ -3,7 +3,8 @@ package com.dnd.dndtravel.map.repository.dto.projection;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
+
+import com.dnd.dndtravel.map.domain.Attraction;
 
 import lombok.Getter;
 
@@ -14,20 +15,21 @@ import lombok.Getter;
 public class RecordProjection {
 	private final long memberAttractionId;
 	private final long entireRecordCount;
-	private final String attractionName;
+	private String attractionName;
 	private final String memo;
 	private final LocalDate visitDate;
 	private final String region;
+	private final Attraction attraction;
 	private List<String> photoUrls;
 
-	public RecordProjection(long memberAttractionId, long entireRecordCount, String attractionName, String memo,
-		LocalDate visitDate, String region) {
+	public RecordProjection(long memberAttractionId, long entireRecordCount, String memo,
+		LocalDate visitDate, String region, Attraction attraction) {
 		this.memberAttractionId = memberAttractionId;
 		this.entireRecordCount = entireRecordCount;
-		this.attractionName = attractionName;
 		this.memo = memo;
 		this.visitDate = visitDate;
 		this.region = region;
+		this.attraction = attraction;
 	}
 
 	public void inputPhotoUrls(List<AttractionPhotoProjection> attractionPhotoProjections) {
@@ -35,7 +37,11 @@ public class RecordProjection {
 			this.photoUrls = attractionPhotoProjections.stream()
 				.map(AttractionPhotoProjection::photoUrl)
 				.filter(Objects::nonNull)
-				.collect(Collectors.toList());
+				.toList();
 		}
+	}
+
+	public void inputAttractionNames() {
+		this.attractionName = this.attraction.getName();
 	}
 }
