@@ -6,10 +6,7 @@ import com.dnd.dndtravel.map.repository.dto.projection.AttractionPhotoProjection
 import com.dnd.dndtravel.map.repository.dto.projection.RecordProjection;
 
 public interface MemberAttractionRepositoryCustom {
+	Long maxCursor(long memberId);
 
-	Long maxCursor(Long memberId);
-
-	List<RecordProjection> findAttractionRecords(Long memberId, Long cursorNo, int displayPerPage);
-
-	List<AttractionPhotoProjection> findByRecordDtos(List<RecordProjection> dtos);
+	List<RecordProjection> findAttractionRecords(long memberId, long cursorNo, int displayPerPage);
 }
