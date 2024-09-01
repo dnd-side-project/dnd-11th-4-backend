@@ -1,6 +1,7 @@
 package com.dnd.dndtravel.map.controller;
 
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -76,5 +77,14 @@ public class MapController {
 	) {
 		long memberId = 1L;
 		mapService.updateVisitRecord(updateRecordRequest.toDto(photos), memberId, recordId);
+	}
+
+	// 기록 삭제
+	@DeleteMapping("/maps/history/{record_id}")
+	public void deleteRecord(
+		@PathVariable long recordId
+	) {
+		long memberId = 1L;
+		mapService.deleteRecord(memberId, recordId);
 	}
 }
