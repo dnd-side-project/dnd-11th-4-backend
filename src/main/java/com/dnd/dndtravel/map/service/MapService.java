@@ -141,6 +141,15 @@ public class MapService {
 		updatePhotoToDatabase(photos, newPhotoUrls, memberAttraction);
 	}
 
+	// 방문기록 삭제
+	@Transactional
+	public void deleteRecord(long memberId, long memberAttractionId) {
+		//validation
+		MemberAttraction memberAttraction = memberAttractionRepository.findByIdAndMemberId(memberAttractionId, memberId)
+			.orElseThrow(() -> new RuntimeException("유효하지 않은 방문 상세 기록"));
+		memberAttractionRepository.delete(memberAttraction);
+	}
+
 	private List<String> updatePhotoToS3(RecordDto dto, List<String> existingUrls) {
 		// s3의 기존 사진 전부 삭제
 		photoService.deleteBeforePhoto(existingUrls);
