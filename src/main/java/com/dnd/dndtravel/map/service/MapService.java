@@ -18,6 +18,7 @@ import com.dnd.dndtravel.map.domain.Region;
 import com.dnd.dndtravel.map.repository.dto.projection.AttractionPhotoProjection;
 import com.dnd.dndtravel.map.repository.dto.projection.RecordProjection;
 import com.dnd.dndtravel.map.service.dto.RegionDto;
+import com.dnd.dndtravel.map.service.dto.response.AttractionRecordDetailViewResponse;
 import com.dnd.dndtravel.map.service.dto.response.AttractionRecordResponse;
 import com.dnd.dndtravel.map.service.dto.response.RegionResponse;
 import com.dnd.dndtravel.map.repository.AttractionRepository;
@@ -113,6 +114,13 @@ public class MapService {
 			.toList();
 	}
 
+	//기록 단건 조회
+	@Transactional(readOnly = true)
+	public AttractionRecordDetailViewResponse findOneVisitRecord(long memberId, long memberAttractionId) {
+		Member member = memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException("존재하지 않는 유저"));
+		MemberAttraction memberAttraction = memberAttractionRepository.findById(memberAttractionId).orElseThrow(() -> new RuntimeException("유효하지 않은 방문 상세 기록"));
+		return AttractionRecordDetailViewResponse.from(memberAttraction);
+	}
 	private void setPhotoUrlsWithJoin(List<RecordProjection> attractionRecords) {
 		List<AttractionPhotoProjection> attractionPhotos = photoRepository.findByRecordDtos(
 			attractionRecords);
