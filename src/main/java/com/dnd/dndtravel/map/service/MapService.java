@@ -73,9 +73,7 @@ public class MapService {
 		Region region = regionRepository.findByName(recordDto.region()).orElseThrow(() -> new RuntimeException("존재하지 않는 지역"));
 		Member member = memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException("존재하지 않는 유저"));
 
-		// 명소 체크후, 새 명소면 DB에 저장
-		Attraction attraction = attractionRepository.findByName(recordDto.attractionName())
-			.orElseGet(() -> attractionRepository.save(Attraction.of(region, recordDto.attractionName())));
+		Attraction attraction = attractionRepository.save(Attraction.of(region, recordDto.attractionName()));
 
 		MemberAttraction memberAttraction = memberAttractionRepository.save(
 			MemberAttraction.of(member, attraction, recordDto.memo(),
@@ -121,6 +119,48 @@ public class MapService {
 		MemberAttraction memberAttraction = memberAttractionRepository.findById(memberAttractionId).orElseThrow(() -> new RuntimeException("유효하지 않은 방문 상세 기록"));
 		return AttractionRecordDetailViewResponse.from(memberAttraction);
 	}
+
+	// 방문기록 수정
+	@Transactional
+	public void updateVisitRecord(RecordDto dto, long memberId, long memberAttractionId) {
+		//validation
+		MemberAttraction memberAttraction = memberAttractionRepository.findByIdAndMemberId(memberAttractionId, memberId).orElseThrow(() -> new RuntimeException("유효하지 않은 방문 상세 기록"));
+
+		//update
+		memberAttraction.updateVisitRecord(dto.region(), dto.dateTime(), dto.memo());
+		Attraction attraction = attractionRepository.findById(memberAttraction.getAttraction().getId()).orElseThrow(() -> new RuntimeException("유효하지 않은 명소이름"));
+		attraction.updateAttractionName(dto.attractionName());
+
+		//사진 업데이트
+		List<Photo> photos = photoRepository.findByMemberAttractionId(memberAttraction.getId());
+		List<String> existingUrls = photos.stream()
+			.map(Photo::getUrl)
+			.toList();
+		List<String> newPhotoUrls = updatePhotoToS3(dto, existingUrls);
+		//todo DB 컬럼을 매번 지웠다가 insert하는게 조금 부자연스럽다고 느낌, 추후 개선포인트 고려해보자
+		updatePhotoToDatabase(photos, newPhotoUrls, memberAttraction);
+	}
+
+	private List<String> updatePhotoToS3(RecordDto dto, List<String> existingUrls) {
+		// s3의 기존 사진 전부 삭제
+		photoService.deleteBeforePhoto(existingUrls);
+
+		// s3에 새로운 사진 전부 업로드
+		return dto.photos().stream()
+			.map(photoService::upload)
+			.toList();
+	}
+
+	private void updatePhotoToDatabase(List<Photo> photos, List<String> newPhotoUrls, MemberAttraction memberAttraction) {
+		photoRepository.deleteAll(photos);
+		List<Photo> newPhotos = newPhotoUrls.stream()
+			.map(url -> Photo.of(memberAttraction, url))
+			.toList();
+
+		// 새로운 사진 저장
+		photoRepository.saveAll(newPhotos);
+	}
+
 	private void setPhotoUrlsWithJoin(List<RecordProjection> attractionRecords) {
 		List<AttractionPhotoProjection> attractionPhotos = photoRepository.findByRecordDtos(
 			attractionRecords);

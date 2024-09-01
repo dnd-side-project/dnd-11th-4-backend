@@ -16,6 +16,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.dnd.dndtravel.map.domain.Photo;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,6 +35,20 @@ public class PhotoService {
 		}
 		validateFileExtension(image.getOriginalFilename());
 		return uploadImage(image);
+	}
+
+	public void deleteBeforePhoto(List<String> existingUrls) {
+		for (String existingPhotoUrl : existingUrls) {
+			// 기존 이미지 URL에서 파일 이름 추출
+			String existingFileName = existingPhotoUrl.substring(existingPhotoUrl.lastIndexOf('/') + 1);;
+
+			// S3에서 기존 이미지 삭제
+			try {
+				amazonS3.deleteObject(bucketName, existingFileName);
+			} catch (SdkClientException e) {
+				throw new RuntimeException("Failed to delete image from S3", e);
+			}
+		}
 	}
 
 	private String uploadImage(MultipartFile image) {

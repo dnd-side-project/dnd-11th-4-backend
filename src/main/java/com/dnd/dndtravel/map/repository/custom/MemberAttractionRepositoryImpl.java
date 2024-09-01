@@ -5,7 +5,9 @@ import static com.dnd.dndtravel.map.domain.QMemberAttraction.memberAttraction;
 import static com.dnd.dndtravel.member.domain.QMember.member;
 
 import java.util.List;
+import java.util.Optional;
 
+import com.dnd.dndtravel.map.domain.MemberAttraction;
 import com.dnd.dndtravel.map.repository.dto.projection.RecordProjection;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
