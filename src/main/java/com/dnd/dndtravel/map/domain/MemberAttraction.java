@@ -56,4 +56,12 @@ public class MemberAttraction {
 			.region(region)
 			.build();
 	}
+
+	public void updateVisitRecord(String region, LocalDate localDate, String memo) {
+		this.region = region;
+		this.localDate = localDate;
+		if (memo != null && !memo.isBlank()) {
+			this.memo = memo;
+		}
+	}
 }
