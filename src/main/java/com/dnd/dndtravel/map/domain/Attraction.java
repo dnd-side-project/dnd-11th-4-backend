@@ -36,4 +36,8 @@ public class Attraction {
 	public static Attraction of(Region region, String attraction) {
 		return new Attraction(region, attraction);
 	}
+
+	public void updateAttractionName(String name) {
+		this.name = name;
+	}
 }
