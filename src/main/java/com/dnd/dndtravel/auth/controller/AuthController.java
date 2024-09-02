@@ -1,10 +1,12 @@
 package com.dnd.dndtravel.auth.controller;
 
+import com.dnd.dndtravel.auth.controller.request.ReIssueTokenRequest;
 import com.dnd.dndtravel.auth.service.dto.response.AppleIdTokenPayload;
 import com.dnd.dndtravel.auth.service.AppleOAuthService;
 import com.dnd.dndtravel.auth.service.JwtTokenService;
 import com.dnd.dndtravel.auth.controller.request.AppleLoginRequest;
 import com.dnd.dndtravel.auth.service.dto.response.TokenResponse;
+import com.dnd.dndtravel.auth.service.dto.response.ReissueTokenResponse;
 import com.dnd.dndtravel.member.domain.Member;
 import com.dnd.dndtravel.member.service.MemberService;
 
@@ -40,5 +42,10 @@ public class AuthController {
         }
 
         return ResponseEntity.ok(tokenResponse);
+    }
+
+    @PostMapping("/reissue/token")
+    public ReissueTokenResponse reissueToken(@RequestBody ReIssueTokenRequest reissueTokenRequest) {
+        return jwtTokenService.reIssue(reissueTokenRequest.refreshToken());
     }
 }
