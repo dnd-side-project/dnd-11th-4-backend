@@ -37,9 +37,8 @@ public class JwtProvider {
             .compact();
     }
 
-    public String refreshToken(Long memberId) {
+    public String refreshToken() {
         return Jwts.builder()
-            .claim(CLAIM_CONTENT, memberId)
             .issuedAt(new Date(System.currentTimeMillis()))
             .expiration(new Date(System.currentTimeMillis() + this.refreshTokenExpiredTime))
             .signWith(secretKey)
