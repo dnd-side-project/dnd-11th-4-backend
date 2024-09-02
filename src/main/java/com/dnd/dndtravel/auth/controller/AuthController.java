@@ -41,4 +41,9 @@ public class AuthController {
 
         return ResponseEntity.ok(tokenResponse);
     }
+
+    @PostMapping("/reissue/token")
+    public ReissueTokenResponse reissueToken(@RequestBody ReIssueTokenRequest reissueTokenRequest) {
+        return jwtTokenService.reIssue(reissueTokenRequest.refreshToken());
+    }
 }

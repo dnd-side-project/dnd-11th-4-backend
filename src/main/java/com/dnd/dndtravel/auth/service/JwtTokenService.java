@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dnd.dndtravel.auth.domain.RefreshToken;
 import com.dnd.dndtravel.auth.repository.RefreshTokenRepository;
 import com.dnd.dndtravel.auth.service.dto.response.TokenResponse;
+import com.dnd.dndtravel.auth.service.dto.response.ReissueTokenResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,7 +22,7 @@ public class JwtTokenService {
 		RefreshToken refreshToken = refreshTokenRepository.findByMemberId(memberId);
 
 		if (refreshToken == null) {
-			String newRefreshToken = jwtProvider.refreshToken(memberId);
+			String newRefreshToken = jwtProvider.refreshToken();
 			refreshTokenRepository.save(RefreshToken.of(memberId, newRefreshToken)); // refreshToken은 DB에 저장
 			return new TokenResponse(jwtProvider.accessToken(memberId), newRefreshToken);
 		} else if (refreshToken.isExpire()) {
@@ -29,5 +30,17 @@ public class JwtTokenService {
 		}
 
 		return new TokenResponse(jwtProvider.accessToken(memberId), null);
+	}
+
+	@Transactional
+	public ReissueTokenResponse reIssue(String token) {
+		//validation
+		RefreshToken refreshToken = refreshTokenRepository.findByRefreshToken(token).orElseThrow(() -> new RuntimeException("유효하지 않은 토큰"));
+
+		//RTR
+		refreshTokenRepository.delete(refreshToken);
+		String newRefreshToken = jwtProvider.refreshToken();
+		refreshTokenRepository.save(RefreshToken.of(refreshToken.getMemberId(), newRefreshToken));
+		return new ReissueTokenResponse(jwtProvider.accessToken(refreshToken.getMemberId()), newRefreshToken);
 	}
 }
