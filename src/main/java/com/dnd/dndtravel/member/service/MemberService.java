@@ -17,4 +17,12 @@ public class MemberService {
         return memberRepository.findByEmail(email)
                 .orElseGet(() -> memberRepository.save(Member.of(name, email,selectedColor)));
     }
+
+    @Transactional
+    public void withdrawMember(long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("Member not found"));
+
+        memberRepository.delete(member);
+    }
 }

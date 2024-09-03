@@ -1,5 +1,7 @@
 package com.dnd.dndtravel.auth.service;
 
+import com.dnd.dndtravel.auth.controller.request.AppleRevokeRequest;
+import com.dnd.dndtravel.auth.service.dto.response.AppleSocialTokenInfoResponse;
 import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +40,6 @@ import com.dnd.dndtravel.auth.config.AppleProperties;
  *     "aud": "https://appleid.apple.com",
  *     "sub": "com.mytest.app"
  * }
- *
  */
 
 @RequiredArgsConstructor
@@ -84,6 +85,36 @@ public class AppleOAuthService {
             return converter.getPrivateKey(privateKeyInfo);
         } catch (Exception e) {
             throw new RuntimeException("Error converting private key from String", e);
+        }
+    }
+
+    public String getAccessToken(String authorizationCode) {
+        AppleSocialTokenInfoResponse tokenInfo = appleClient.getIdToken(
+                appleProperties.getClientId(),
+                generateClientSecret(),
+                appleProperties.getGrantType(),
+                authorizationCode
+        );
+        return tokenInfo.accessToken();
+    }
+
+    public boolean revoke(String accessToken) {
+        try {
+            AppleRevokeRequest revokeRequest = new AppleRevokeRequest(
+                    appleProperties.getClientId(),
+                    generateClientSecret(),
+                    accessToken,
+                    "access_token"
+            );
+            appleClient.revoke(
+                    revokeRequest.clientId(),
+                    revokeRequest.clientSecret(),
+                    revokeRequest.Token(),
+                    revokeRequest.tokenType()
+            );
+            return true;
+        } catch (Exception e) {
+            throw new RuntimeException("Error revoking Apple token", e);
         }
     }
 }
