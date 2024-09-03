@@ -1,5 +1,6 @@
 package com.dnd.dndtravel.auth.controller;
 
+import com.dnd.dndtravel.auth.controller.request.AppleWithdrawRequest;
 import com.dnd.dndtravel.auth.controller.request.ReIssueTokenRequest;
 import com.dnd.dndtravel.auth.service.dto.response.AppleIdTokenPayload;
 import com.dnd.dndtravel.auth.service.AppleOAuthService;
@@ -47,5 +48,22 @@ public class AuthController {
     @PostMapping("/reissue/token")
     public ReissueTokenResponse reissueToken(@RequestBody ReIssueTokenRequest reissueTokenRequest) {
         return jwtTokenService.reIssue(reissueTokenRequest.refreshToken());
+    }
+
+    @PostMapping("/withdraw")
+    public ResponseEntity<Void> withdraw(@RequestBody AppleWithdrawRequest withdrawRequest) {
+        // 1. Apple 서버에서 Access Token 받아오기
+        String accessToken = appleOAuthService.getAccessToken(withdrawRequest.authorizationCode());
+
+        // 2. Apple 서버에 탈퇴 요청
+        boolean revokeSuccessful = appleOAuthService.revoke(accessToken);
+
+        if (revokeSuccessful) {
+            // 3. 자체 회원 탈퇴 진행
+            memberService.withdrawMember(withdrawRequest.memberId());
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }
