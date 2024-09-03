@@ -114,7 +114,8 @@ public class AppleOAuthService {
             );
             return true;
         } catch (Exception e) {
-            throw new RuntimeException("Error revoking Apple token", e);
+            log.error("Error revoking Apple token", e);
+            return false;
         }
     }
 }
