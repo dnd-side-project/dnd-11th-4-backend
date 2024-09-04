@@ -1,8 +1,6 @@
 package com.dnd.dndtravel.map.repository;
 
 import java.util.List;
-import java.util.Optional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.dnd.dndtravel.map.domain.Photo;
