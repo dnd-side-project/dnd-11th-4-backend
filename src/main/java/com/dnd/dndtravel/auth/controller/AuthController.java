@@ -31,7 +31,7 @@ public class AuthController {
         AppleIdTokenPayload tokenPayload = appleOAuthService.get(appleLoginRequest.appleToken());
 
         // apple에서 가져온 유저정보를 DB에 저장
-        Member member = memberService.saveMember(tokenPayload.name(), tokenPayload.email(), appleLoginRequest.selectedColor());
+        Member member = memberService.saveMember(tokenPayload.email(), appleLoginRequest.selectedColor());
 
         // 클라이언트와 주고받을 user token(access , refresh) 생성
         TokenResponse tokenResponse = jwtTokenService.generateTokens(member.getId());
