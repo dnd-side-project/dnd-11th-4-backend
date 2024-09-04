@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SwaggerConfig {
+
     @Bean
     public OpenAPI openAPI() {
         return new OpenAPI()
@@ -14,6 +15,5 @@ public class SwaggerConfig {
                         .title("MAPDDANG API")
                         .description("맵땅 앱 관련 API")
                         .version("1.0.0"));
-
     }
 }

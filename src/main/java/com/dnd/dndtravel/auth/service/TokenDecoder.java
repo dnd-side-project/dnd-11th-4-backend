@@ -2,6 +2,7 @@ package com.dnd.dndtravel.auth.service;
 
 import java.util.Base64;
 
+import com.dnd.dndtravel.auth.exception.AppleTokenDecodingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -25,7 +26,7 @@ public class TokenDecoder {
 		try {
 			return objectMapper.readValue(payload, targetClass);
 		} catch (Exception e) {
-			throw new RuntimeException("Error decoding token payload", e);
+			throw new AppleTokenDecodingException(e);
 		}
 	}
 }

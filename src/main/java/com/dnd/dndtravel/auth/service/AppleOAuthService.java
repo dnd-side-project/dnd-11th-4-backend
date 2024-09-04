@@ -43,7 +43,6 @@ import com.dnd.dndtravel.auth.config.AppleProperties;
 
 @RequiredArgsConstructor
 @Component
-@Slf4j
 public class AppleOAuthService {
     private final AppleClient appleClient;
     private final AppleProperties appleProperties;
