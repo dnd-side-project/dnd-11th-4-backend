@@ -1,5 +1,7 @@
 package com.dnd.dndtravel.member.service;
 
+import com.dnd.dndtravel.map.repository.MemberAttractionRepository;
+import com.dnd.dndtravel.map.repository.MemberRegionRepository;
 import com.dnd.dndtravel.member.domain.Member;
 import com.dnd.dndtravel.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final MemberAttractionRepository memberAttractionRepository;
+    private final MemberRegionRepository memberRegionRepository;
 
     @Transactional
     public Member saveMember(String name, String email, String selectedColor) {
@@ -24,5 +28,7 @@ public class MemberService {
                 .orElseThrow(() -> new RuntimeException("Member not found"));
 
         memberRepository.delete(member);
+        memberAttractionRepository.deleteById(memberId);
+        memberRegionRepository.deleteById(memberId);
     }
 }
