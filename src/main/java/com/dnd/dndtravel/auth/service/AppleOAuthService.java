@@ -1,6 +1,5 @@
 package com.dnd.dndtravel.auth.service;
 
-import com.dnd.dndtravel.auth.controller.request.AppleRevokeRequest;
 import com.dnd.dndtravel.auth.service.dto.response.AppleSocialTokenInfoResponse;
 import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
@@ -98,24 +97,16 @@ public class AppleOAuthService {
         return tokenInfo.accessToken();
     }
 
-    public boolean revoke(String accessToken) {
+    public void revoke(String accessToken) {
         try {
-            AppleRevokeRequest revokeRequest = new AppleRevokeRequest(
+            appleClient.revoke(
                     appleProperties.getClientId(),
                     generateClientSecret(),
                     accessToken,
                     "access_token"
             );
-            appleClient.revoke(
-                    revokeRequest.clientId(),
-                    revokeRequest.clientSecret(),
-                    revokeRequest.Token(),
-                    revokeRequest.tokenType()
-            );
-            return true;
         } catch (Exception e) {
-            log.error("Error revoking Apple token", e);
-            return false;
+            throw new RuntimeException("Error revoking Apple token", e);
         }
     }
 }
