@@ -1,6 +1,6 @@
 package com.dnd.dndtravel.auth.service;
 
-import com.dnd.dndtravel.auth.controller.request.AppleRevokeRequest;
+import com.dnd.dndtravel.auth.service.dto.response.AppleRevokeResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,7 +30,7 @@ public interface AppleClient {
     );
 
     @PostMapping("/auth/revoke")
-    AppleRevokeRequest revoke(
+    AppleRevokeResponse revoke(
             @RequestParam("client_id") String clientId,
             @RequestParam("client_secret") String clientSecret,
             @RequestParam("token") String refreshToken,
