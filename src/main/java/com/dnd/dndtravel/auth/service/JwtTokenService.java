@@ -16,7 +16,6 @@ public class JwtTokenService {
 	private final JwtProvider jwtProvider;
 	private final RefreshTokenRepository refreshTokenRepository;
 
-	// todo 현재 refreshtoken하나로 계속해서 발급해주는 모델인데, 이는 리프레쉬 탈취시 보안위협있음. 추후 개선 필요
 	@Transactional
 	public TokenResponse generateTokens(Long memberId) {
 		RefreshToken refreshToken = refreshTokenRepository.findByMemberId(memberId);
