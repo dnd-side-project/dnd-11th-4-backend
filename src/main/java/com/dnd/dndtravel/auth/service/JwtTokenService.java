@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.dndtravel.auth.domain.RefreshToken;
+import com.dnd.dndtravel.auth.exception.RefreshTokenInvalidException;
 import com.dnd.dndtravel.auth.repository.RefreshTokenRepository;
 import com.dnd.dndtravel.auth.service.dto.response.TokenResponse;
 import com.dnd.dndtravel.auth.service.dto.response.ReissueTokenResponse;
@@ -34,7 +35,7 @@ public class JwtTokenService {
 	@Transactional
 	public ReissueTokenResponse reIssue(String token) {
 		//validation
-		RefreshToken refreshToken = refreshTokenRepository.findByRefreshToken(token).orElseThrow(() -> new RuntimeException("유효하지 않은 토큰"));
+		RefreshToken refreshToken = refreshTokenRepository.findByRefreshToken(token).orElseThrow(() -> new RefreshTokenInvalidException(token));
 
 		//RTR
 		refreshTokenRepository.delete(refreshToken);
