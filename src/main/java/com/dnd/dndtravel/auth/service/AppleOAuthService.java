@@ -1,5 +1,6 @@
 package com.dnd.dndtravel.auth.service;
 
+import com.dnd.dndtravel.auth.exception.AppleTokenRevokeException;
 import com.dnd.dndtravel.auth.service.dto.response.AppleSocialTokenInfoResponse;
 import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
@@ -105,7 +106,7 @@ public class AppleOAuthService {
                     "access_token"
             );
         } catch (Exception e) {
-            throw new RuntimeException("Error revoking Apple token", e);
+            throw new AppleTokenRevokeException(e);
         }
     }
 }
