@@ -52,7 +52,7 @@ public class JwtProvider {
         Jws<Claims> claims;
         try {
             claims = Jwts.parser()
-                    .verifyWith(Keys.hmacShaKeyFor(Base64.getDecoder().decode(String.valueOf(this.secretKey))))
+                    .verifyWith(secretKey)
                     .build()
                     .parseSignedClaims(splitHeader);
 
