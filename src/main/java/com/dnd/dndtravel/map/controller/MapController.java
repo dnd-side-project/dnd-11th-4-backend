@@ -1,5 +1,6 @@
 package com.dnd.dndtravel.map.controller;
 
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,38 +14,35 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.dnd.dndtravel.config.AuthenticationMember;
 import com.dnd.dndtravel.map.controller.request.RecordRequest;
 import com.dnd.dndtravel.map.controller.request.UpdateRecordRequest;
 import com.dnd.dndtravel.map.controller.request.validation.PhotoValidation;
-import com.dnd.dndtravel.config.AuthenticationMember;
+import com.dnd.dndtravel.map.controller.swagger.MapControllerSwagger;
 import com.dnd.dndtravel.map.service.MapService;
 import com.dnd.dndtravel.map.service.dto.response.AttractionRecordDetailViewResponse;
 import com.dnd.dndtravel.map.service.dto.response.AttractionRecordResponse;
 import com.dnd.dndtravel.map.service.dto.response.RegionResponse;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @Validated
 @RestController
 @RequiredArgsConstructor
-public class MapController {
+public class MapController implements MapControllerSwagger {
 
 	private final MapService mapService;
 
-	@Tag(name = "MAP", description = "지도 API")
-	@Operation(summary = "전체 지역 조회", description = "전체 지역 방문 횟수를 조회합니다.")
 	@GetMapping("/maps")
 	public RegionResponse map(AuthenticationMember authenticationMember) {
 		return mapService.allRegions(authenticationMember.id());
 	}
 
-	@PostMapping("/maps/record")
+	@PostMapping(value = "/maps/record", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public void memo(
-		@PhotoValidation @RequestPart("photos") List<MultipartFile> photos,
-		@RequestPart("recordRequest") RecordRequest recordRequest,
-		AuthenticationMember authenticationMember
+		AuthenticationMember authenticationMember,
+		@PhotoValidation @RequestPart(value = "photos", required = false) List<MultipartFile> photos,
+		@RequestPart("recordRequest") RecordRequest recordRequest
 	) {
 		mapService.recordAttraction(recordRequest.toDto(photos), authenticationMember.id());
 	}
@@ -53,9 +51,9 @@ public class MapController {
 	//서버에서 클라에 마지막 게시글의 ID를 줘야함
 	@GetMapping("/maps/history")
 	public List<AttractionRecordResponse> findRecords(
-		@RequestParam long cursorNo,
-		@RequestParam(defaultValue = "10") int displayPerPage,
-		AuthenticationMember authenticationMember
+		AuthenticationMember authenticationMember,
+		@RequestParam(defaultValue = "0") long cursorNo,
+		@RequestParam(defaultValue = "10") int displayPerPage
 	) {
 		return mapService.allRecords(authenticationMember.id(), cursorNo, displayPerPage);
 	}
@@ -63,28 +61,28 @@ public class MapController {
 	// 기록 단건 조회
 	@GetMapping("/maps/history/{recordId}")
 	public AttractionRecordDetailViewResponse findRecord(
+		AuthenticationMember authenticationMember,
 		@PathVariable long recordId
 	) {
-		long memberId = 1L;
-		return mapService.findOneVisitRecord(memberId, recordId);
+		return mapService.findOneVisitRecord(authenticationMember.id(), recordId);
 	}
 
-	@PutMapping("/maps/history/{recordId}")
+	@PutMapping(value = "/maps/history/{recordId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public void updateRecord(
+		AuthenticationMember authenticationMember,
 		@PathVariable long recordId,
-		@PhotoValidation @RequestPart("photos") List<MultipartFile> photos,
+		@PhotoValidation @RequestPart(value = "photos", required = false) List<MultipartFile> photos,
 		@RequestPart("updateRecordRequest") UpdateRecordRequest updateRecordRequest
 	) {
-		long memberId = 1L;
-		mapService.updateVisitRecord(updateRecordRequest.toDto(photos), memberId, recordId);
+		mapService.updateVisitRecord(updateRecordRequest.toDto(photos), authenticationMember.id(), recordId);
 	}
 
 	// 기록 삭제
 	@DeleteMapping("/maps/history/{recordId}")
 	public void deleteRecord(
+		AuthenticationMember authenticationMember,
 		@PathVariable long recordId
 	) {
-		long memberId = 1L;
-		mapService.deleteRecord(memberId, recordId);
+		mapService.deleteRecord(authenticationMember.id(), recordId);
 	}
 }

@@ -11,6 +11,9 @@ import java.util.Date;
 
 import javax.crypto.SecretKey;
 
+import com.dnd.dndtravel.auth.exception.JwtTokenExpiredException;
+import com.dnd.dndtravel.auth.exception.JwtTokenDecodingException;
+
 @Component
 public class JwtProvider {
     private static final String CLAIM_CONTENT = "memberId";
@@ -49,14 +52,14 @@ public class JwtProvider {
         Jws<Claims> claims;
         try {
             claims = Jwts.parser()
-                    .verifyWith(Keys.hmacShaKeyFor(Base64.getDecoder().decode(String.valueOf(this.secretKey))))
+                    .verifyWith(secretKey)
                     .build()
                     .parseSignedClaims(splitHeader);
 
         } catch (ExpiredJwtException e) {
-            throw new RuntimeException("message", e); // 유효하지 않은 토큰
+            throw new JwtTokenExpiredException(e);
         } catch (JwtException e) {
-            throw new RuntimeException("message", e); // 토큰 해독 실패
+            throw new JwtTokenDecodingException(e);
         }
 
         return claims.getPayload();

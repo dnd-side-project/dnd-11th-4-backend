@@ -15,6 +15,9 @@ import com.dnd.dndtravel.map.domain.Attraction;
 import com.dnd.dndtravel.map.domain.MemberAttraction;
 import com.dnd.dndtravel.map.domain.MemberRegion;
 import com.dnd.dndtravel.map.domain.Region;
+import com.dnd.dndtravel.map.exception.MemberAttractionNotFoundException;
+import com.dnd.dndtravel.map.exception.MemberNotFoundException;
+import com.dnd.dndtravel.map.exception.RegionNotFoundException;
 import com.dnd.dndtravel.map.repository.dto.projection.AttractionPhotoProjection;
 import com.dnd.dndtravel.map.repository.dto.projection.RecordProjection;
 import com.dnd.dndtravel.map.service.dto.RegionDto;
@@ -45,8 +48,7 @@ public class MapService {
 
 	@Transactional(readOnly = true)
 	public RegionResponse allRegions(long memberId) {
-		//todo custom ex
-		Member member = memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException("존재하지 않는 유저"));
+		Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException(memberId));
 
 		// 유저의 지역 방문기록 전부 가져온다
 		List<MemberRegion> memberRegions = memberRegionRepository.findByMemberId(memberId);
@@ -70,8 +72,8 @@ public class MapService {
 	@Transactional
 	public void recordAttraction(RecordDto recordDto, long memberId) {
 		// validate
-		Region region = regionRepository.findByName(recordDto.region()).orElseThrow(() -> new RuntimeException("존재하지 않는 지역"));
-		Member member = memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException("존재하지 않는 유저"));
+		Region region = regionRepository.findByName(recordDto.region()).orElseThrow(() -> new RegionNotFoundException(recordDto.region()));
+		Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException(memberId));
 
 		Attraction attraction = attractionRepository.save(Attraction.of(region, recordDto.attractionName()));
 
@@ -90,7 +92,7 @@ public class MapService {
 	@Transactional(readOnly = true)
 	public List<AttractionRecordResponse> allRecords(long memberId, long cursorNo, int displayPerPage) {
 		//validation
-		Member member = memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException("존재하지 않는 유저"));
+		Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException(memberId));
 		List<MemberAttraction> memberAttractions = memberAttractionRepository.findByMemberId(memberId);
 		if (memberAttractions.isEmpty()) {
 			return List.of();
@@ -115,8 +117,9 @@ public class MapService {
 	//기록 단건 조회
 	@Transactional(readOnly = true)
 	public AttractionRecordDetailViewResponse findOneVisitRecord(long memberId, long memberAttractionId) {
-		Member member = memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException("존재하지 않는 유저"));
-		MemberAttraction memberAttraction = memberAttractionRepository.findById(memberAttractionId).orElseThrow(() -> new RuntimeException("유효하지 않은 방문 상세 기록"));
+		//todo memberAttraction 쿼리한방으로 줄일수도 있을것같다.
+		Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException(memberId));
+		MemberAttraction memberAttraction = memberAttractionRepository.findById(memberAttractionId).orElseThrow(() -> new MemberAttractionNotFoundException(memberAttractionId));
 		return AttractionRecordDetailViewResponse.from(memberAttraction);
 	}
 
@@ -124,7 +127,7 @@ public class MapService {
 	@Transactional
 	public void updateVisitRecord(RecordDto dto, long memberId, long memberAttractionId) {
 		//validation
-		MemberAttraction memberAttraction = memberAttractionRepository.findByIdAndMemberId(memberAttractionId, memberId).orElseThrow(() -> new RuntimeException("유효하지 않은 방문 상세 기록"));
+		MemberAttraction memberAttraction = memberAttractionRepository.findByIdAndMemberId(memberAttractionId, memberId).orElseThrow(() -> new MemberAttractionNotFoundException(memberAttractionId));
 
 		//update
 		memberAttraction.updateVisitRecord(dto.region(), dto.dateTime(), dto.memo());
@@ -146,7 +149,7 @@ public class MapService {
 	public void deleteRecord(long memberId, long memberAttractionId) {
 		//validation
 		MemberAttraction memberAttraction = memberAttractionRepository.findByIdAndMemberId(memberAttractionId, memberId)
-			.orElseThrow(() -> new RuntimeException("유효하지 않은 방문 상세 기록"));
+			.orElseThrow(() -> new MemberAttractionNotFoundException(memberAttractionId));
 
 		List<Photo> photos = photoRepository.findByMemberAttractionId(memberAttraction.getId());
 		photoRepository.deleteAll(photos);
@@ -212,9 +215,11 @@ public class MapService {
 	}
 
 	private void savePhotos(List<MultipartFile> photos, MemberAttraction memberAttractionEntity) {
-		for (MultipartFile photo : photos) {
-			String imageUrl = photoService.upload(photo);
-			photoRepository.save(Photo.of(memberAttractionEntity, imageUrl));
+		if (photos != null && !photos.isEmpty()) {
+			for (MultipartFile photo : photos) {
+				String imageUrl = photoService.upload(photo);
+				photoRepository.save(Photo.of(memberAttractionEntity, imageUrl));
+			}
 		}
 	}
 }
