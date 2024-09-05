@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
  */
 public record AppleWithdrawRequest(
         @NotBlank(message = "인증 코드가 존재하지 않습니다.")
-        @Size(max = 12, message = "인증 코드가 12자를 초과하였습니다.")
+        @Size(max = 300, message = "인증 코드 길이를 초과하였습니다.")
         String authorizationCode
 ) {
 }
