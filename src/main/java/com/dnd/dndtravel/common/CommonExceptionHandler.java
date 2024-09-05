@@ -17,7 +17,11 @@ import com.dnd.dndtravel.map.exception.PhotoEmptyException;
 import com.dnd.dndtravel.map.exception.PhotoInvalidException;
 import com.dnd.dndtravel.map.exception.PhotoUploadFailException;
 import com.dnd.dndtravel.map.exception.RegionNotFoundException;
+
+import lombok.extern.slf4j.Slf4j;
+
 //todo 예외클래스가 많아지면 해당클래스가 길어질것으로 예상, 개선필요해보이고 보안 때문에 상태코드별로 애매하게 동일한 메시지를 전달해주고, 스웨거 문서로 상세 오류를 전달해주는데 이 구조가 적절한건지 고민해봐야한다.
+@Slf4j
 @RestControllerAdvice
 public class CommonExceptionHandler {
 
@@ -111,6 +115,7 @@ public class CommonExceptionHandler {
 
 	@ExceptionHandler(RuntimeException.class)
 	public ResponseEntity<String> runtimeException(RuntimeException e) {
+		log.error("runtimeException = {}", e);
 		return ResponseEntity
 			.status(HttpStatus.INTERNAL_SERVER_ERROR)
 			.body(INTERNAL_SERVER_ERROR_MESSAGE);
@@ -118,6 +123,7 @@ public class CommonExceptionHandler {
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<String> runtimeException(Exception e) {
+		log.error("exception = {}", e);
 		return ResponseEntity
 			.status(HttpStatus.INTERNAL_SERVER_ERROR)
 			.body(INTERNAL_SERVER_ERROR_MESSAGE);
