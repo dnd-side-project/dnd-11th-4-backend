@@ -16,7 +16,12 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.dnd.dndtravel.map.domain.Photo;
+
+import com.dnd.dndtravel.map.exception.PhotoDeleteFailException;
+import com.dnd.dndtravel.map.exception.PhotoEmptyException;
+import com.dnd.dndtravel.map.exception.PhotoInvalidException;
+import com.dnd.dndtravel.map.exception.PhotoUploadFailException;
+
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,7 +36,7 @@ public class PhotoService {
 
 	public String upload(MultipartFile image) {
 		if (image.isEmpty() || Objects.isNull(image.getOriginalFilename())) {
-			throw new RuntimeException("유효하지 않은 이미지");
+			throw new PhotoEmptyException();
 		}
 		validateFileExtension(image.getOriginalFilename());
 		return uploadImage(image);
@@ -46,7 +51,7 @@ public class PhotoService {
 			try {
 				amazonS3.deleteObject(bucketName, existingFileName);
 			} catch (SdkClientException e) {
-				throw new RuntimeException("Failed to delete image from S3", e);
+				throw new PhotoDeleteFailException(existingFileName, e);
 			}
 		}
 	}
@@ -55,21 +60,21 @@ public class PhotoService {
 		try {
 			return uploadImageToS3(image);
 		} catch (IOException e) {
-			throw new RuntimeException("이미지 업로드 예외"); // custom ex (S3Exception)
+			throw new PhotoUploadFailException(image, e);
 		}
 	}
 
 	private void validateFileExtension(String filename) {
 		int lastDotIndex = filename.lastIndexOf(".");
 		if (lastDotIndex == -1) {
-			throw new RuntimeException("파일 확장자가 없음");
+			throw new PhotoInvalidException("파일 확장자가 없음");
 		}
 
 		String extension = filename.substring(lastDotIndex + 1).toLowerCase();
 		List<String> allowedExtentionList = Arrays.asList("jpg", "jpeg", "png");
 
 		if (!allowedExtentionList.contains(extension)) {
-			throw new RuntimeException("invalid file extension");
+			throw new PhotoInvalidException("invalid file extension");
 		}
 	}
 
@@ -92,7 +97,7 @@ public class PhotoService {
 			//실제로 S3에 이미지 데이터를 넣는 부분이다.
 			amazonS3.putObject(putObjectRequest); // put image to S3
 		} catch (SdkClientException e) {
-			throw new RuntimeException("Failed to upload image to S3", e);
+			throw new PhotoUploadFailException(s3FileName, e);
 		}
 
 		return amazonS3.getUrl(bucketName, s3FileName).toString();

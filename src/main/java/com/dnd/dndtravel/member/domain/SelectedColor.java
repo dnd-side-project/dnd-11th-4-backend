@@ -24,4 +24,9 @@ public enum SelectedColor {
 			.filter(color -> color.getValue().equalsIgnoreCase(selectedColor))
 			.findAny().orElseThrow(() -> new RuntimeException("존재하지 않는 색상입니다"));
 	}
+
+	public static boolean isMatch(String color) {
+		return Arrays.stream(SelectedColor.values())
+			.anyMatch(selectedColor -> selectedColor.getValue().equals(color));
+	}
 }
