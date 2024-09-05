@@ -16,24 +16,45 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-public record RecordRequest(
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * record타입은 multipart로 받을때 Caused by: com.fasterxml.jackson.databind.exc.MismatchedInputException: Cannot construct instance of
+ * `*.request.RecordRequest` (although at least one Creator exists):
+ * no String-argument constructor/factory method to deserialize from String value 문제가 있었음
+ *
+ */
+@Getter
+@Setter
+public class RecordRequest {
 	@Schema(description = "지역 이름", requiredMode = REQUIRED)
 	@RegionEnum(enumClass = RegionCondition.class)
-	String region,
+	String region;
 
 	@Schema(description = "명소명", requiredMode = REQUIRED)
 	@NotBlank(message = "명소명은 필수 입니다.")
 	@Size(max = 10, message = "명소 이름은 10자 이내여야 합니다.")
-	String attractionName,
+	String attractionName;
 
 	@Schema(description = "메모", requiredMode = NOT_REQUIRED)
 	@Size(max = 25, message = "메모는 25자 이내여야 합니다.")
-	String memo,
+	String memo;
 
 	@Schema(description = "방문날짜, ISO Date(yyyy-MM-dd) 형식으로 입력", requiredMode = NOT_REQUIRED)
 	@NotNull(message = "날짜는 필수 입력 사항입니다.")
-	LocalDate localDate
-) {
+	LocalDate localDate;
+
+	public RecordRequest() {
+	}
+
+	public RecordRequest(String region, String attractionName, String memo, LocalDate localDate) {
+		this.region = region;
+		this.attractionName = attractionName;
+		this.memo = memo;
+		this.localDate = localDate;
+	}
+
 	public RecordDto toDto(List<MultipartFile> photos) {
 		return RecordDto.builder()
 			.region(this.region)

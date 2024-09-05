@@ -215,9 +215,11 @@ public class MapService {
 	}
 
 	private void savePhotos(List<MultipartFile> photos, MemberAttraction memberAttractionEntity) {
-		for (MultipartFile photo : photos) {
-			String imageUrl = photoService.upload(photo);
-			photoRepository.save(Photo.of(memberAttractionEntity, imageUrl));
+		if (photos != null && !photos.isEmpty()) {
+			for (MultipartFile photo : photos) {
+				String imageUrl = photoService.upload(photo);
+				photoRepository.save(Photo.of(memberAttractionEntity, imageUrl));
+			}
 		}
 	}
 }

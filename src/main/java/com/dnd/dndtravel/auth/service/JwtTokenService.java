@@ -21,15 +21,23 @@ public class JwtTokenService {
 	public TokenResponse generateTokens(Long memberId) {
 		RefreshToken refreshToken = refreshTokenRepository.findByMemberId(memberId);
 
+		// 리프레시 토큰이 없는경우
 		if (refreshToken == null) {
 			String newRefreshToken = jwtProvider.refreshToken();
 			refreshTokenRepository.save(RefreshToken.of(memberId, newRefreshToken)); // refreshToken은 DB에 저장
 			return new TokenResponse(jwtProvider.accessToken(memberId), newRefreshToken);
-		} else if (refreshToken.isExpire()) {
+		}
+		
+		// 리프레시 토큰이 만료됐으면 재발급 받으라고 멘트줌
+		if (refreshToken.isExpire()) {
 			return null;
 		}
-
-		return new TokenResponse(jwtProvider.accessToken(memberId), null);
+		
+		// 리프레시 토큰이 DB에 존재하고 유효한경우
+		refreshTokenRepository.delete(refreshToken);
+		String newRefreshToken = jwtProvider.refreshToken();
+		refreshTokenRepository.save(RefreshToken.of(refreshToken.getMemberId(), newRefreshToken));
+		return new TokenResponse(jwtProvider.accessToken(memberId), newRefreshToken);
 	}
 
 	@Transactional
