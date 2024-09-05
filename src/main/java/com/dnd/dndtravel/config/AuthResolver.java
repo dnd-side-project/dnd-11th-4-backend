@@ -48,7 +48,8 @@ public class AuthResolver implements HandlerMethodArgumentResolver {
 		Claims accessClaim = jwtProvider.parseClaims(splitHeaders[1]);
 
 		//토큰에 심었던 user 식별자값 유효성 확인
-		Member member = memberRepository.findById((Long)accessClaim.get(MEMBER_ID_CLAIM))
+		Integer memberId = (Integer) accessClaim.get(MEMBER_ID_CLAIM);
+		Member member = memberRepository.findById(memberId.longValue())
 			.orElseThrow(() -> new RuntimeException("유효하지 않은 토큰 값"));
 
 		// 컨트롤러 파라미터로 반환
