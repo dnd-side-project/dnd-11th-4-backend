@@ -1,15 +1,12 @@
 package com.dnd.dndtravel.common;
 
+import com.dnd.dndtravel.auth.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.dnd.dndtravel.auth.exception.AppleTokenDecodingException;
-import com.dnd.dndtravel.auth.exception.JwtTokenDecodingException;
-import com.dnd.dndtravel.auth.exception.JwtTokenExpiredException;
-import com.dnd.dndtravel.auth.exception.RefreshTokenInvalidException;
 import com.dnd.dndtravel.map.exception.MemberAttractionNotFoundException;
 import com.dnd.dndtravel.map.exception.MemberNotFoundException;
 import com.dnd.dndtravel.map.exception.PhotoDeleteFailException;
@@ -61,6 +58,13 @@ public class CommonExceptionHandler {
 		return ResponseEntity
 			.status(HttpStatus.UNAUTHORIZED)
 			.body("토큰 인증에 실패했습니다");
+	}
+
+	@ExceptionHandler(AppleTokenRevokeException.class)
+	public ResponseEntity<String> runtimeException(AppleTokenRevokeException e) {
+		return ResponseEntity
+				.status(HttpStatus.UNAUTHORIZED)
+				.body("토큰 인증에 실패했습니다");
 	}
 
 	@ExceptionHandler(JwtTokenExpiredException.class)
