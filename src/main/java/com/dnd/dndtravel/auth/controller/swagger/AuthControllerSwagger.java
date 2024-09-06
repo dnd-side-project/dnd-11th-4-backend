@@ -1,5 +1,7 @@
 package com.dnd.dndtravel.auth.controller.swagger;
 
+import com.dnd.dndtravel.auth.controller.request.AppleWithdrawRequest;
+import com.dnd.dndtravel.config.AuthenticationMember;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
@@ -63,5 +65,29 @@ public interface AuthControllerSwagger {
 	ReissueTokenResponse reissueToken(
 		@Parameter(description = "refreshToken", required = true)
 		ReIssueTokenRequest reissueTokenRequest
+	);
+
+	@Operation(
+			summary = "애플 회원 탈퇴 API"
+	)
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "정상적으로 탈퇴 되었습니다."),
+			@ApiResponse(responseCode = "400", description = "인증 실패 또는 유효하지 않은 요청",
+					content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+							schema = @Schema(example = STATUS_CODE_400_BODY_MESSAGE)
+					)
+			),
+			@ApiResponse(
+					responseCode = "500", description = "서버 오류",
+					content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+							schema = @Schema(example = "{\"message\":\"Internal Server Error\"}")
+					)
+			)
+	})
+	void withdraw(
+			@Parameter(description = "요청 정보(authorization code)", required = true)
+					AppleWithdrawRequest appleWithdrawRequest,
+			@Parameter(hidden = true)
+					AuthenticationMember authenticationMember
 	);
 }
