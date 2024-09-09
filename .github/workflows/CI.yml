@@ -55,4 +55,8 @@ jobs:
           --application-name ${{ env.AWS_CODE_DEPLOY_APPLICATION }} \
           --deployment-config-name CodeDeployDefault.AllAtOnce \
           --deployment-group-name ${{ env.AWS_CODE_DEPLOY_GROUP }} \
+<<<<<<< HEAD
           --s3-location bucket=$AWS_S3_BUCKET,bundleType=zip,key=cicd/$GITHUB_SHA.zip
+=======
+          --s3-location bucket=$AWS_S3_BUCKET,bundleType=zip,key=cicd/$GITHUB_SHA.zip
+>>>>>>> 0c4b8e1f2918633c06af838b69fb6340000aa432
