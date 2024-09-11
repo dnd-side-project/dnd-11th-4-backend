@@ -15,8 +15,6 @@ import lombok.Builder;
 public record AttractionRecordResponse(
 	@Schema(description = "방문기록 id", requiredMode = REQUIRED)
 	long id,
-	@Schema(description = "방문기록 전체개수", requiredMode = REQUIRED)
-	long entireRecordCount,
 	@Schema(description = "지역명", requiredMode = REQUIRED)
 	String region,
 	@Schema(description = "명소명", requiredMode = REQUIRED)
@@ -31,7 +29,6 @@ public record AttractionRecordResponse(
 	public static AttractionRecordResponse from(RecordProjection recordProjection) {
 		return AttractionRecordResponse.builder()
 			.id(recordProjection.getMemberAttractionId())
-			.entireRecordCount(recordProjection.getEntireRecordCount())
 			.attractionName(recordProjection.getAttractionName())
 			.memo(recordProjection.getMemo())
 			.visitDate(recordProjection.getVisitDate())

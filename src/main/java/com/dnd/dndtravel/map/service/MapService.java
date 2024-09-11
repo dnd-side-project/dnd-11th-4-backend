@@ -21,8 +21,8 @@ import com.dnd.dndtravel.map.exception.RegionNotFoundException;
 import com.dnd.dndtravel.map.repository.dto.projection.AttractionPhotoProjection;
 import com.dnd.dndtravel.map.repository.dto.projection.RecordProjection;
 import com.dnd.dndtravel.map.service.dto.RegionDto;
-import com.dnd.dndtravel.map.service.dto.response.AttractionRecordDetailViewResponse;
 import com.dnd.dndtravel.map.service.dto.response.AttractionRecordResponse;
+import com.dnd.dndtravel.map.service.dto.response.AttractionRecordsResponse;
 import com.dnd.dndtravel.map.service.dto.response.RegionResponse;
 import com.dnd.dndtravel.map.repository.AttractionRepository;
 import com.dnd.dndtravel.map.repository.MemberAttractionRepository;
@@ -90,12 +90,12 @@ public class MapService {
 
 	// 모든 기록 조회
 	@Transactional(readOnly = true)
-	public List<AttractionRecordResponse> allRecords(long memberId, long cursorNo, int displayPerPage) {
+	public AttractionRecordsResponse allRecords(long memberId, long cursorNo, int displayPerPage) {
 		//validation
 		Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException(memberId));
 		List<MemberAttraction> memberAttractions = memberAttractionRepository.findByMemberId(memberId);
 		if (memberAttractions.isEmpty()) {
-			return List.of();
+			return new AttractionRecordsResponse(0, List.of());
 		}
 
 		// 첫 커서값인 경우
@@ -103,24 +103,16 @@ public class MapService {
 			cursorNo = memberAttractionRepository.maxCursor(member.getId());
 		}
 		List<RecordProjection> attractionRecords = memberAttractionRepository.findAttractionRecords(memberId, cursorNo, displayPerPage);
+		Long visitCount = memberAttractionRepository.entireVisitCount(memberId);
 
 		// 명소명 저장
 		attractionRecords.forEach(RecordProjection::inputAttractionNames);
 		// 사진 URL 저장
 		setPhotoUrlsWithJoin(attractionRecords);
 
-		return attractionRecords.stream()
+		return new AttractionRecordsResponse(visitCount, attractionRecords.stream()
 			.map(AttractionRecordResponse::from)
-			.toList();
-	}
-
-	//기록 단건 조회
-	@Transactional(readOnly = true)
-	public AttractionRecordDetailViewResponse findOneVisitRecord(long memberId, long memberAttractionId) {
-		//todo memberAttraction 쿼리한방으로 줄일수도 있을것같다.
-		Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException(memberId));
-		MemberAttraction memberAttraction = memberAttractionRepository.findById(memberAttractionId).orElseThrow(() -> new MemberAttractionNotFoundException(memberAttractionId));
-		return AttractionRecordDetailViewResponse.from(memberAttraction);
+			.toList());
 	}
 
 	// 방문기록 수정
