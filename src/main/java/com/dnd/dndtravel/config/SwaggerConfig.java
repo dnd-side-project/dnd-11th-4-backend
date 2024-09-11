@@ -16,7 +16,7 @@ public class SwaggerConfig {
     public OpenAPI openAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("MAPDDANG API")
+                        .title("MAPDDANG TEST API")
                         .description("맵땅 앱 관련 API")
                         .version("1.0.0"))
                 .addServersItem(new Server().url("/").description("Generated Default Server URL")) //local에서는 http, aws에서는 https로 server url 설정됨
