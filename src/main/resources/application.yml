@@ -30,8 +30,8 @@ social-login:
 
 jwt:
   secret-key: ${JWT_SECRET_KEY}
-  access-token-expired-ms: ${ACCESS_TOKEN_EXPIRE}
-  refresh-token-expired-ms: ${REFRESH_TOKEN_EXPIRE}
+  access-token-expired-ms: ${ACCESS_TOKEN_EXPIRE_DEV}
+  refresh-token-expired-ms: ${REFRESH_TOKEN_EXPIRE_DEV}
 
 cloud:
   aws:
