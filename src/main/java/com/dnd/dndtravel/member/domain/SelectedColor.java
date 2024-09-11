@@ -6,10 +6,10 @@ import lombok.Getter;
 
 @Getter
 public enum SelectedColor {
-	RED("RED"),
+	PINK("PINK"),
 	ORANGE("ORANGE"),
 	YELLOW("YELLOW"),
-	MELON("MELON"),
+	GREEN("GREEN"),
 	BLUE("BLUE"),
 	PURPLE("PURPLE");
 
