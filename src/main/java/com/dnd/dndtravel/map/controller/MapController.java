@@ -20,7 +20,6 @@ import com.dnd.dndtravel.map.controller.request.UpdateRecordRequest;
 import com.dnd.dndtravel.map.controller.request.validation.PhotoValidation;
 import com.dnd.dndtravel.map.controller.swagger.MapControllerSwagger;
 import com.dnd.dndtravel.map.service.MapService;
-import com.dnd.dndtravel.map.service.dto.response.AttractionRecordDetailViewResponse;
 import com.dnd.dndtravel.map.service.dto.response.AttractionRecordResponse;
 import com.dnd.dndtravel.map.service.dto.response.RegionResponse;
 
@@ -56,15 +55,6 @@ public class MapController implements MapControllerSwagger {
 		@RequestParam(defaultValue = "10") int displayPerPage
 	) {
 		return mapService.allRecords(authenticationMember.id(), cursorNo, displayPerPage);
-	}
-
-	// 기록 단건 조회
-	@GetMapping("/maps/history/{recordId}")
-	public AttractionRecordDetailViewResponse findRecord(
-		AuthenticationMember authenticationMember,
-		@PathVariable long recordId
-	) {
-		return mapService.findOneVisitRecord(authenticationMember.id(), recordId);
 	}
 
 	@PutMapping(value = "/maps/history/{recordId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
