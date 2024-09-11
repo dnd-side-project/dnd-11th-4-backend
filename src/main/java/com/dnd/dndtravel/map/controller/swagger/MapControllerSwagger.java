@@ -9,6 +9,7 @@ import com.dnd.dndtravel.config.AuthenticationMember;
 import com.dnd.dndtravel.map.controller.request.RecordRequest;
 import com.dnd.dndtravel.map.controller.request.UpdateRecordRequest;
 import com.dnd.dndtravel.map.service.dto.response.AttractionRecordResponse;
+import com.dnd.dndtravel.map.service.dto.response.AttractionRecordsResponse;
 import com.dnd.dndtravel.map.service.dto.response.RegionResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -82,7 +83,7 @@ public interface MapControllerSwagger {
 		),
 	})
 	@AuthenticationCommonResponse
-	List<AttractionRecordResponse> findRecords(
+	AttractionRecordsResponse findRecords(
 		@Parameter(hidden = true)
 		AuthenticationMember authenticationMember,
 		@Parameter(description = "게시글의 ID값, 0 혹은 미입력시 가장최신 페이지 조회", example = "이전요청의 마지막 게시글ID가 7인경우 7로 요청시 다음 페이지 게시글 조회")
