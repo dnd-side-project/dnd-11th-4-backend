@@ -14,7 +14,7 @@ env:
   MYSQL_URL_DEV: ${{ secrets.MYSQL_URL_DEV }}
   MYSQL_USERNAME: ${{ secrets.MYSQL_USERNAME }}
   MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-  APPLE_CLIENT_ID: ${{ secrets.APPLE_CLIENT_ID }}
+  APPLE_CLIENT_ID_DEV: ${{ secrets.APPLE_CLIENT_ID_DEV }}
   APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
   APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
   APPLE_PRIVATE_KEY: ${{ secrets.APPLE_PRIVATE_KEY }}
