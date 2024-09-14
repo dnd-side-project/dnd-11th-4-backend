@@ -13,6 +13,6 @@ public interface MemberAttractionRepository extends JpaRepository<MemberAttracti
 
 	List<MemberAttraction> findByMemberId(long memberId);
 
-	Optional<MemberAttraction> findByIdAndMemberId(long memberId, long memberAttractionId);
+	Optional<MemberAttraction> findByIdAndMemberId(long memberAttractionId, long memberId);
 }
 
