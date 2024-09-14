@@ -20,7 +20,6 @@ import com.dnd.dndtravel.map.controller.request.UpdateRecordRequest;
 import com.dnd.dndtravel.map.controller.request.validation.PhotoValidation;
 import com.dnd.dndtravel.map.controller.swagger.MapControllerSwagger;
 import com.dnd.dndtravel.map.service.MapService;
-import com.dnd.dndtravel.map.service.dto.response.AttractionRecordResponse;
 import com.dnd.dndtravel.map.service.dto.response.AttractionRecordsResponse;
 import com.dnd.dndtravel.map.service.dto.response.RegionResponse;
 

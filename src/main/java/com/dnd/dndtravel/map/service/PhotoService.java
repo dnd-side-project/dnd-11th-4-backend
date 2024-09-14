@@ -42,7 +42,7 @@ public class PhotoService {
 		return uploadImage(image);
 	}
 
-	public void deleteBeforePhoto(List<String> existingUrls) {
+	public void deleteS3Photo(List<String> existingUrls) {
 		for (String existingPhotoUrl : existingUrls) {
 			// 기존 이미지 URL에서 파일 이름 추출
 			String existingFileName = existingPhotoUrl.substring(existingPhotoUrl.lastIndexOf('/') + 1);;
