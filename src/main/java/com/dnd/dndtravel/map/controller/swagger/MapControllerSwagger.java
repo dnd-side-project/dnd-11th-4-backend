@@ -3,6 +3,7 @@ package com.dnd.dndtravel.map.controller.swagger;
 import java.util.List;
 
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dnd.dndtravel.config.AuthenticationMember;
@@ -17,6 +18,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.SchemaProperty;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -61,12 +64,9 @@ public interface MapControllerSwagger {
 	})
 	@AuthenticationCommonResponse
 	void memo(
-		@Parameter(hidden = true)
-		AuthenticationMember authenticationMember,
-		@Parameter(description = "사진")
-		List<MultipartFile> photos,
-		@Parameter(description = "기록 요청 정보", required = true)
-		RecordRequest recordRequest
+		@Parameter(hidden = true) AuthenticationMember authenticationMember,
+		@Parameter(description = "사진", schema = @Schema(type = "array", format = "binary")) List<MultipartFile> photos,
+		@Parameter(description = "기록 요청 정보", required = true) RecordRequest recordRequest
 	);
 
 	@Operation(
