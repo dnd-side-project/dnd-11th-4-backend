@@ -21,11 +21,10 @@ public class SwaggerConfig {
                         .version("1.0.0"))
                 .addServersItem(new Server().url("/").description("Generated Default Server URL")) //local에서는 http, aws에서는 https로 server url 설정됨
                 .addSecurityItem(new SecurityRequirement()
-                        .addList("Access Token")
-                        .addList("Refresh Token"))
+                        .addList("Access Token"))
                 .components(new Components()
                         .addSecuritySchemes("Access Token", createAccessTokenScheme())
-                        .addSecuritySchemes("Refresh Token", createRefreshTokenScheme()));
+                );
     }
 
     private SecurityScheme createAccessTokenScheme() {
@@ -33,12 +32,5 @@ public class SwaggerConfig {
                 .bearerFormat("JWT")
                 .scheme("bearer")
                 .description("Access Token");
-    }
-
-    private SecurityScheme createRefreshTokenScheme() {
-        return new SecurityScheme().type(SecurityScheme.Type.HTTP)
-                .bearerFormat("JWT")
-                .scheme("bearer")
-                .description("Refresh Token");
     }
 }
