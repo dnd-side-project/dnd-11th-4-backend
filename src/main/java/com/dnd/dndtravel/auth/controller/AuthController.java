@@ -51,7 +51,7 @@ public class AuthController implements AuthControllerSwagger {
     }
 
     @DeleteMapping("/withdraw")
-    public void withdraw(@Valid @RequestBody AppleWithdrawRequest withdrawRequest, AuthenticationMember authenticationMember) {
+    public void withdraw(@Valid @RequestParam AppleWithdrawRequest withdrawRequest, AuthenticationMember authenticationMember) {
         // 1. Apple 서버에서 Access Token 받아오기
         String accessToken = appleOAuthService.getAccessToken(withdrawRequest.authorizationCode());
 

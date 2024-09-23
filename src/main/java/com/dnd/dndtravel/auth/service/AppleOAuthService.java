@@ -88,13 +88,12 @@ public class AppleOAuthService {
     }
 
     public String getAccessToken(String authorizationCode) {
-        AppleSocialTokenInfoResponse tokenInfo = appleClient.getIdToken(
+        return appleClient.getIdToken(
                 appleProperties.getClientId(),
                 generateClientSecret(),
                 appleProperties.getGrantType(),
                 authorizationCode
-        );
-        return tokenInfo.accessToken();
+        ).accessToken();
     }
 
     public void revoke(String accessToken) {
