@@ -3,13 +3,14 @@ package com.dnd.dndtravel.map.controller.swagger;
 import java.util.List;
 
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dnd.dndtravel.config.AuthenticationMember;
 import com.dnd.dndtravel.map.controller.request.RecordRequest;
 import com.dnd.dndtravel.map.controller.request.UpdateRecordRequest;
-import com.dnd.dndtravel.map.service.dto.response.AttractionRecordDetailViewResponse;
 import com.dnd.dndtravel.map.service.dto.response.AttractionRecordResponse;
+import com.dnd.dndtravel.map.service.dto.response.AttractionRecordsResponse;
 import com.dnd.dndtravel.map.service.dto.response.RegionResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +18,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.SchemaProperty;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -61,12 +64,9 @@ public interface MapControllerSwagger {
 	})
 	@AuthenticationCommonResponse
 	void memo(
-		@Parameter(hidden = true)
-		AuthenticationMember authenticationMember,
-		@Parameter(description = "사진")
-		List<MultipartFile> photos,
-		@Parameter(description = "기록 요청 정보", required = true)
-		RecordRequest recordRequest
+		@Parameter(hidden = true) AuthenticationMember authenticationMember,
+		@Parameter(description = "사진", schema = @Schema(type = "array", format = "binary")) List<MultipartFile> photos,
+		@Parameter(description = "기록 요청 정보", required = true) RecordRequest recordRequest
 	);
 
 	@Operation(
@@ -83,34 +83,13 @@ public interface MapControllerSwagger {
 		),
 	})
 	@AuthenticationCommonResponse
-	List<AttractionRecordResponse> findRecords(
+	AttractionRecordsResponse findRecords(
 		@Parameter(hidden = true)
 		AuthenticationMember authenticationMember,
 		@Parameter(description = "게시글의 ID값, 0 혹은 미입력시 가장최신 페이지 조회", example = "이전요청의 마지막 게시글ID가 7인경우 7로 요청시 다음 페이지 게시글 조회")
 		long cursorNo,
 		@Parameter(description = "페이지당 조회할 게시글 개수, 미입력시 10으로 지정")
 		int displayPerPage
-	);
-
-	@Operation(
-		summary = "인증된 사용자의 방문 기록 단건 조회"
-	)
-	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "정상조회, 단일 JSON객체 반환",
-			content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-			schema = @Schema(implementation = AttractionRecordDetailViewResponse.class))),
-		@ApiResponse(responseCode = "400", description = "유저정보나 방문기록이 유효하지 않은경우",
-			content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-				schema = @Schema(example = STATUS_CODE_400_BODY_MESSAGE)
-			)
-		),
-	})
-	@AuthenticationCommonResponse
-	AttractionRecordDetailViewResponse findRecord(
-		@Parameter(hidden = true)
-		AuthenticationMember authenticationMember,
-		@Parameter(description = "방문기록 id값", required = true)
-		long recordId
 	);
 
 	@Operation(

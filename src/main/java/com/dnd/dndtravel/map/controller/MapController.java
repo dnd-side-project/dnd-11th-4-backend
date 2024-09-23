@@ -20,8 +20,7 @@ import com.dnd.dndtravel.map.controller.request.UpdateRecordRequest;
 import com.dnd.dndtravel.map.controller.request.validation.PhotoValidation;
 import com.dnd.dndtravel.map.controller.swagger.MapControllerSwagger;
 import com.dnd.dndtravel.map.service.MapService;
-import com.dnd.dndtravel.map.service.dto.response.AttractionRecordDetailViewResponse;
-import com.dnd.dndtravel.map.service.dto.response.AttractionRecordResponse;
+import com.dnd.dndtravel.map.service.dto.response.AttractionRecordsResponse;
 import com.dnd.dndtravel.map.service.dto.response.RegionResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -50,21 +49,12 @@ public class MapController implements MapControllerSwagger {
 	//커서를 0으로 주면 최신 게시글을을 displayPerPage별로 조회함
 	//서버에서 클라에 마지막 게시글의 ID를 줘야함
 	@GetMapping("/maps/history")
-	public List<AttractionRecordResponse> findRecords(
+	public AttractionRecordsResponse findRecords(
 		AuthenticationMember authenticationMember,
 		@RequestParam(defaultValue = "0") long cursorNo,
 		@RequestParam(defaultValue = "10") int displayPerPage
 	) {
 		return mapService.allRecords(authenticationMember.id(), cursorNo, displayPerPage);
-	}
-
-	// 기록 단건 조회
-	@GetMapping("/maps/history/{recordId}")
-	public AttractionRecordDetailViewResponse findRecord(
-		AuthenticationMember authenticationMember,
-		@PathVariable long recordId
-	) {
-		return mapService.findOneVisitRecord(authenticationMember.id(), recordId);
 	}
 
 	@PutMapping(value = "/maps/history/{recordId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

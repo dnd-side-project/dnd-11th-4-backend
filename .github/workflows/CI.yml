@@ -11,6 +11,19 @@ env:
   AWS_S3_BUCKET: mapddang-test-s3
   AWS_CODE_DEPLOY_APPLICATION: mapddang-test
   AWS_CODE_DEPLOY_GROUP: mapddang-test-group
+  MYSQL_URL_DEV: ${{ secrets.MYSQL_URL_DEV }}
+  MYSQL_USERNAME: ${{ secrets.MYSQL_USERNAME }}
+  MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+  APPLE_CLIENT_ID_DEV: ${{ secrets.APPLE_CLIENT_ID_DEV }}
+  APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
+  APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+  APPLE_PRIVATE_KEY: ${{ secrets.APPLE_PRIVATE_KEY }}
+  JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+  ACCESS_TOKEN_EXPIRE_DEV: ${{ secrets.ACCESS_TOKEN_EXPIRE_DEV }}
+  REFRESH_TOKEN_EXPIRE_DEV: ${{ secrets.REFRESH_TOKEN_EXPIRE_DEV }}
+  EC2_ACCESS_KEY_DEV: ${{ secrets.EC2_ACCESS_KEY_DEV }}
+  EC2_SECRET_KEY_DEV: ${{ secrets.EC2_SECRET_KEY_DEV }}
+  AWS_BUCKET_NAME_DEV: ${{ secrets.AWS_BUCKET_NAME_DEV }}
 
 jobs:
   build-with-gradle:
@@ -44,10 +57,10 @@ jobs:
       - name: Upload to AWS S3
         run: |
           aws deploy push \
-            --application-name ${{ env.AWS_CODE_DEPLOY_APPLICATION }} \
-            --ignore-hidden-files \
-            --s3-location s3://$AWS_S3_BUCKET/cicd/$GITHUB_SHA.zip \
-            --source .
+          --application-name ${{ env.AWS_CODE_DEPLOY_APPLICATION }} \
+          --ignore-hidden-files \
+          --s3-location s3://$AWS_S3_BUCKET/cicd/$GITHUB_SHA.zip \
+          --source .
       #업로드된 ZIP 파일을 CodeDeploy로 배포
       - name: AWS Code Deploy
         run: |

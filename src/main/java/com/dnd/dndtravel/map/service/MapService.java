@@ -21,8 +21,8 @@ import com.dnd.dndtravel.map.exception.RegionNotFoundException;
 import com.dnd.dndtravel.map.repository.dto.projection.AttractionPhotoProjection;
 import com.dnd.dndtravel.map.repository.dto.projection.RecordProjection;
 import com.dnd.dndtravel.map.service.dto.RegionDto;
-import com.dnd.dndtravel.map.service.dto.response.AttractionRecordDetailViewResponse;
 import com.dnd.dndtravel.map.service.dto.response.AttractionRecordResponse;
+import com.dnd.dndtravel.map.service.dto.response.AttractionRecordsResponse;
 import com.dnd.dndtravel.map.service.dto.response.RegionResponse;
 import com.dnd.dndtravel.map.repository.AttractionRepository;
 import com.dnd.dndtravel.map.repository.MemberAttractionRepository;
@@ -90,12 +90,12 @@ public class MapService {
 
 	// 모든 기록 조회
 	@Transactional(readOnly = true)
-	public List<AttractionRecordResponse> allRecords(long memberId, long cursorNo, int displayPerPage) {
+	public AttractionRecordsResponse allRecords(long memberId, long cursorNo, int displayPerPage) {
 		//validation
 		Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException(memberId));
 		List<MemberAttraction> memberAttractions = memberAttractionRepository.findByMemberId(memberId);
 		if (memberAttractions.isEmpty()) {
-			return List.of();
+			return new AttractionRecordsResponse(0, List.of());
 		}
 
 		// 첫 커서값인 경우
@@ -103,31 +103,24 @@ public class MapService {
 			cursorNo = memberAttractionRepository.maxCursor(member.getId());
 		}
 		List<RecordProjection> attractionRecords = memberAttractionRepository.findAttractionRecords(memberId, cursorNo, displayPerPage);
+		Long visitCount = memberAttractionRepository.entireVisitCount(memberId);
 
 		// 명소명 저장
 		attractionRecords.forEach(RecordProjection::inputAttractionNames);
 		// 사진 URL 저장
 		setPhotoUrlsWithJoin(attractionRecords);
 
-		return attractionRecords.stream()
+		return new AttractionRecordsResponse(visitCount, attractionRecords.stream()
 			.map(AttractionRecordResponse::from)
-			.toList();
-	}
-
-	//기록 단건 조회
-	@Transactional(readOnly = true)
-	public AttractionRecordDetailViewResponse findOneVisitRecord(long memberId, long memberAttractionId) {
-		//todo memberAttraction 쿼리한방으로 줄일수도 있을것같다.
-		Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException(memberId));
-		MemberAttraction memberAttraction = memberAttractionRepository.findById(memberAttractionId).orElseThrow(() -> new MemberAttractionNotFoundException(memberAttractionId));
-		return AttractionRecordDetailViewResponse.from(memberAttraction);
+			.toList());
 	}
 
 	// 방문기록 수정
+	//todo DB 컬럼을 매번 지웠다가 insert하는게 조금 부자연스럽다고 느낌, 추후 개선포인트 고려해보자
 	@Transactional
 	public void updateVisitRecord(RecordDto dto, long memberId, long memberAttractionId) {
 		//validation
-		MemberAttraction memberAttraction = memberAttractionRepository.findByIdAndMemberId(memberAttractionId, memberId).orElseThrow(() -> new MemberAttractionNotFoundException(memberAttractionId));
+		MemberAttraction memberAttraction = memberAttractionRepository.findByIdAndMemberId(memberAttractionId, memberId).orElseThrow(() -> new MemberAttractionNotFoundException(memberId, memberAttractionId));
 
 		//update
 		memberAttraction.updateVisitRecord(dto.region(), dto.dateTime(), dto.memo());
@@ -135,13 +128,44 @@ public class MapService {
 		attraction.updateAttractionName(dto.attractionName());
 
 		//사진 업데이트
-		List<Photo> photos = photoRepository.findByMemberAttractionId(memberAttraction.getId());
-		List<String> existingUrls = photos.stream()
+		updatePhotos(memberAttraction, dto.photos());
+	}
+
+	/**
+	 * 기록에 저장된 사진이 없는경우, 수정요청엔 사진이 있는경우 => s3에 업로드, DB에 새로 사진추가
+	 * 기록에 저장된 사진이 없는경우, 수정요청엔 사진이 없는경우 => 아무작업도 안해도 됨
+	 * 기록에 저장된 사진이 있는경우, 수정요청엔 사진이 있는경우 => s3에 있던 사진 전부 삭제후 재 업로드, DB에 있던 사진 전부 삭제 후 새로운 사진 추가
+	 * 기록에 저장된 사진이 있는경우, 수정요청엔 사진이 없는경우 => s3에 있던 사진 전부삭제, DB에 있던 사진 전부 삭제
+	 */
+	private void updatePhotos(MemberAttraction memberAttraction, List<MultipartFile> newPhotos) {
+		// 방문기록에 저장된 사진 조회
+		List<Photo> existingPhotos = photoRepository.findByMemberAttractionId(memberAttraction.getId());
+		List<String> existingUrls = existingPhotos.stream()
 			.map(Photo::getUrl)
 			.toList();
-		List<String> newPhotoUrls = updatePhotoToS3(dto, existingUrls);
-		//todo DB 컬럼을 매번 지웠다가 insert하는게 조금 부자연스럽다고 느낌, 추후 개선포인트 고려해보자
-		updatePhotoToDatabase(photos, newPhotoUrls, memberAttraction);
+
+		// 방문기록에 저장된 사진이 없고, 수정요청에도 사진이 없는경우
+		if (existingPhotos.isEmpty() && (newPhotos == null || newPhotos.isEmpty())) {
+			return;
+		}
+
+		// 기존의 사진이 존재하는 경우
+		if (!existingPhotos.isEmpty()) {
+			photoService.deleteS3Photo(existingUrls);
+			photoRepository.deleteAll(existingPhotos);
+		}
+
+		// 새로운 사진 수정요청이 들어오는경우, S3에 업로드 후 DB에 추가
+		if (newPhotos != null && !newPhotos.isEmpty()) {
+			List<String> newPhotoUrls = newPhotos.stream()
+				.map(photoService::upload)
+				.toList();
+
+			List<Photo> newPhotoEntities = newPhotoUrls.stream()
+				.map(url -> Photo.of(memberAttraction, url))
+				.toList();
+			photoRepository.saveAll(newPhotoEntities);
+		}
 	}
 
 	// 방문기록 삭제
@@ -149,32 +173,12 @@ public class MapService {
 	public void deleteRecord(long memberId, long memberAttractionId) {
 		//validation
 		MemberAttraction memberAttraction = memberAttractionRepository.findByIdAndMemberId(memberAttractionId, memberId)
-			.orElseThrow(() -> new MemberAttractionNotFoundException(memberAttractionId));
+			.orElseThrow(() -> new MemberAttractionNotFoundException(memberAttractionId, memberId));
 
 		List<Photo> photos = photoRepository.findByMemberAttractionId(memberAttraction.getId());
 		photoRepository.deleteAll(photos);
 		memberAttractionRepository.delete(memberAttraction);
 		attractionRepository.deleteById(memberAttraction.getAttraction().getId());
-	}
-
-	private List<String> updatePhotoToS3(RecordDto dto, List<String> existingUrls) {
-		// s3의 기존 사진 전부 삭제
-		photoService.deleteBeforePhoto(existingUrls);
-
-		// s3에 새로운 사진 전부 업로드
-		return dto.photos().stream()
-			.map(photoService::upload)
-			.toList();
-	}
-
-	private void updatePhotoToDatabase(List<Photo> photos, List<String> newPhotoUrls, MemberAttraction memberAttraction) {
-		photoRepository.deleteAll(photos);
-		List<Photo> newPhotos = newPhotoUrls.stream()
-			.map(url -> Photo.of(memberAttraction, url))
-			.toList();
-
-		// 새로운 사진 저장
-		photoRepository.saveAll(newPhotos);
 	}
 
 	private void setPhotoUrlsWithJoin(List<RecordProjection> attractionRecords) {

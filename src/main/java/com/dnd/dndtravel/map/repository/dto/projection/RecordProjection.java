@@ -14,7 +14,6 @@ import lombok.Getter;
 @Getter
 public class RecordProjection {
 	private final long memberAttractionId;
-	private final long entireRecordCount;
 	private String attractionName;
 	private final String memo;
 	private final LocalDate visitDate;
@@ -22,10 +21,9 @@ public class RecordProjection {
 	private final Attraction attraction;
 	private List<String> photoUrls;
 
-	public RecordProjection(long memberAttractionId, long entireRecordCount, String memo,
+	public RecordProjection(long memberAttractionId, String memo,
 		LocalDate visitDate, String region, Attraction attraction) {
 		this.memberAttractionId = memberAttractionId;
-		this.entireRecordCount = entireRecordCount;
 		this.memo = memo;
 		this.visitDate = visitDate;
 		this.region = region;
