@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+
+    <appender name="aws_cloudwatch_log" class="ca.pjer.logback.AwsLogsAppender">
+        <layout>
+            <pattern>[%thread] [%date] [%level] [%file:%line] - %msg%n</pattern>
+        </layout>
+        <logGroupName>mapddang-log-prod</logGroupName>
+        <logStreamUuidPrefix>mapddang-prod</logStreamUuidPrefix>
+        <logRegion>your-aws-region</logRegion>
+        <maxBatchLogEvents>50</maxBatchLogEvents>
+        <maxFlushTimeMillis>30000</maxFlushTimeMillis>
+        <maxBlockTimeMillis>5000</maxBlockTimeMillis>
+        <retentionTimeDays>0</retentionTimeDays>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="console" />
+        <appender-ref ref="aws_cloudwatch_log" />
+    </root>
+</configuration>
