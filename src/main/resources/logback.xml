@@ -7,8 +7,8 @@
         <layout>
             <pattern>[%thread] [%date] [%level] [%file:%line] - %msg%n</pattern>
         </layout>
-        <logGroupName>spring-boot-app.log</logGroupName>
-        <logStreamUuidPrefix>spring-boot-log</logStreamUuidPrefix>
+        <logGroupName>mapddang-log-prod</logGroupName>
+        <logStreamUuidPrefix>mapddang-prod</logStreamUuidPrefix>
         <logRegion>your-aws-region</logRegion>
         <maxBatchLogEvents>50</maxBatchLogEvents>
         <maxFlushTimeMillis>30000</maxFlushTimeMillis>
