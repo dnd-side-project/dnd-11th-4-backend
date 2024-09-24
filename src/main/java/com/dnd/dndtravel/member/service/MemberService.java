@@ -1,6 +1,7 @@
 package com.dnd.dndtravel.member.service;
 
 import com.dnd.dndtravel.auth.repository.RefreshTokenRepository;
+import com.dnd.dndtravel.map.exception.MemberNotFoundException;
 import com.dnd.dndtravel.map.repository.MemberAttractionRepository;
 import com.dnd.dndtravel.map.repository.MemberRegionRepository;
 import com.dnd.dndtravel.auth.service.MemberNameGenerator;
@@ -31,8 +32,7 @@ public class MemberService {
 
     @Transactional
     public void withdrawMember(long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new RuntimeException("Member not found"));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException(memberId));
 
         memberRepository.delete(member);
         memberAttractionRepository.deleteById(memberId);
@@ -42,7 +42,7 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public MyPageResponse myPageInfo(long memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException());
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException(memberId));
         return new MyPageResponse(member.getName());
     }
 }
