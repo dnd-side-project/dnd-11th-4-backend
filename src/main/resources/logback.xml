@@ -8,12 +8,14 @@
             <pattern>[%thread] [%date] [%level] [%file:%line] - %msg%n</pattern>
         </layout>
         <logGroupName>mapddang-log-prod</logGroupName>
-        <logStreamUuidPrefix>mapddang-log-prod</logStreamUuidPrefix>
+        <logStreamUuidPrefix>mapddang-prod-</logStreamUuidPrefix>
         <logRegion>ap-northeast-2</logRegion>
         <maxBatchLogEvents>50</maxBatchLogEvents>
         <maxFlushTimeMillis>30000</maxFlushTimeMillis>
         <maxBlockTimeMillis>5000</maxBlockTimeMillis>
         <retentionTimeDays>0</retentionTimeDays>
+        <accessKeyId>${AWS_S3_ACCESS_KEY}</accessKeyId>
+        <secretAccessKey>${AWS_S3_SECRET_KEY}</secretAccessKey>
     </appender>
 
     <root level="INFO">
