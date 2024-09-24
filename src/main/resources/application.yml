@@ -17,6 +17,10 @@ spring:
 logging:
   level:
     root: INFO  # 로그 레벨 설정
+  file:
+    name: /home/ec-user/mapddnag-back/spring-boot-app.log
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
 
 social-login:
   provider:
