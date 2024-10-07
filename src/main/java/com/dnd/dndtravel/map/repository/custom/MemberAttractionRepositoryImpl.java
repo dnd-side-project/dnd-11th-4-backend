@@ -37,7 +37,7 @@ public class MemberAttractionRepositoryImpl implements MemberAttractionRepositor
 	 */
 
 	@Override
-	public List<RecordProjection> findAttractionRecords(long memberId, long cursorNo, int displayPerPage) {
+	public List<RecordProjection> findAttractionRecords(long cursorNo, int displayPerPage) {
 		return jpaQueryFactory.select(Projections.constructor(RecordProjection.class,
 				memberAttraction.id,
 				memberAttraction.memo,
@@ -46,7 +46,7 @@ public class MemberAttractionRepositoryImpl implements MemberAttractionRepositor
 				attraction
 			))
 			.from(memberAttraction)
-			.join(member).on(memberAttraction.member.id.eq(memberId))
+			.join(member).on(memberAttraction.member.id.eq(member.id))
 			.join(attraction).on(memberAttraction.attraction.id.eq(attraction.id))
 			.where(memberAttraction.id.lt(cursorNo))
 			.orderBy(memberAttraction.id.desc())

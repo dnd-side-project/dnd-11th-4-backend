@@ -65,7 +65,7 @@ public interface MapControllerSwagger {
 	@AuthenticationCommonResponse
 	void memo(
 		@Parameter(hidden = true) AuthenticationMember authenticationMember,
-		@Parameter(description = "사진", schema = @Schema(type = "array", format = "binary")) List<MultipartFile> photos,
+		@Parameter(description = "수정요청한 사진(jpg, jpeg, png)", required = false) List<MultipartFile> photos,
 		@Parameter(description = "기록 요청 정보", required = true) RecordRequest recordRequest
 	);
 
@@ -109,7 +109,7 @@ public interface MapControllerSwagger {
 		AuthenticationMember authenticationMember,
 		@Parameter(description = "방문기록 id값", required = true)
 		long recordId,
-		@Parameter(description = "수정요청한 사진", required = false)
+		@Parameter(description = "수정요청한 사진(jpg, jpeg, png)", required = false)
 		List<MultipartFile> photos,
 		@Parameter(description = "수정요청 값", required = true)
 		UpdateRecordRequest updateRecordRequest

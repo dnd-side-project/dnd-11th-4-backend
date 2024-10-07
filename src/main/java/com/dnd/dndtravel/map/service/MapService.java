@@ -91,8 +91,7 @@ public class MapService {
 	// 모든 기록 조회
 	@Transactional(readOnly = true)
 	public AttractionRecordsResponse allRecords(long memberId, long cursorNo, int displayPerPage) {
-		//validation
-		Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException(memberId));
+		// 회원의 방문기록 조회
 		List<MemberAttraction> memberAttractions = memberAttractionRepository.findByMemberId(memberId);
 		if (memberAttractions.isEmpty()) {
 			return new AttractionRecordsResponse(0, List.of());
@@ -100,9 +99,9 @@ public class MapService {
 
 		// 첫 커서값인 경우
 		if (cursorNo <= 0) {
-			cursorNo = memberAttractionRepository.maxCursor(member.getId());
+			cursorNo = memberAttractionRepository.maxCursor(memberId) + 1;
 		}
-		List<RecordProjection> attractionRecords = memberAttractionRepository.findAttractionRecords(memberId, cursorNo, displayPerPage);
+		List<RecordProjection> attractionRecords = memberAttractionRepository.findAttractionRecords(cursorNo, displayPerPage);
 		Long visitCount = memberAttractionRepository.entireVisitCount(memberId);
 
 		// 명소명 저장
@@ -129,6 +128,19 @@ public class MapService {
 
 		//사진 업데이트
 		updatePhotos(memberAttraction, dto.photos());
+	}
+
+	// 방문기록 삭제
+	@Transactional
+	public void deleteRecord(long memberId, long memberAttractionId) {
+		//validation
+		MemberAttraction memberAttraction = memberAttractionRepository.findByIdAndMemberId(memberAttractionId, memberId)
+			.orElseThrow(() -> new MemberAttractionNotFoundException(memberAttractionId, memberId));
+
+		List<Photo> photos = photoRepository.findByMemberAttractionId(memberAttraction.getId());
+		photoRepository.deleteAll(photos);
+		memberAttractionRepository.delete(memberAttraction);
+		attractionRepository.deleteById(memberAttraction.getAttraction().getId());
 	}
 
 	/**
@@ -166,19 +178,6 @@ public class MapService {
 				.toList();
 			photoRepository.saveAll(newPhotoEntities);
 		}
-	}
-
-	// 방문기록 삭제
-	@Transactional
-	public void deleteRecord(long memberId, long memberAttractionId) {
-		//validation
-		MemberAttraction memberAttraction = memberAttractionRepository.findByIdAndMemberId(memberAttractionId, memberId)
-			.orElseThrow(() -> new MemberAttractionNotFoundException(memberAttractionId, memberId));
-
-		List<Photo> photos = photoRepository.findByMemberAttractionId(memberAttraction.getId());
-		photoRepository.deleteAll(photos);
-		memberAttractionRepository.delete(memberAttraction);
-		attractionRepository.deleteById(memberAttraction.getAttraction().getId());
 	}
 
 	private void setPhotoUrlsWithJoin(List<RecordProjection> attractionRecords) {
