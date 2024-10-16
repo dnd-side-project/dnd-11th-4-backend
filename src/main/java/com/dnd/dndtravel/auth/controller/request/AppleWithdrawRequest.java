@@ -10,9 +10,9 @@ import jakarta.validation.constraints.Size;
 클라이언트에서 서버로 보내는 요청
  */
 public record AppleWithdrawRequest(
-        @Schema(description = "authorization code", requiredMode = REQUIRED)
-        @NotBlank(message = "authorization code는 필수 입니다.")
-        @Size(max = 300, message = "authorization code 형식이 아닙니다.")
-        String authorizationCode
+        @Schema(description = "Apple Refresh Token", requiredMode = REQUIRED)
+        @NotBlank(message = "appleRefreshTokend은 필수 입니다.")
+        @Size(max = 300, message = "token 형식이 아닙니다.")
+        String appleRefreshToken
 ) {
 }

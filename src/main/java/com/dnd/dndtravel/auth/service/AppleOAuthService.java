@@ -44,6 +44,7 @@ import com.dnd.dndtravel.auth.config.AppleProperties;
 
 @RequiredArgsConstructor
 @Component
+@Slf4j
 public class AppleOAuthService {
     private final AppleClient appleClient;
     private final AppleProperties appleProperties;
@@ -87,22 +88,22 @@ public class AppleOAuthService {
         }
     }
 
-    public String getAccessToken(String authorizationCode) {
+    public AppleSocialTokenInfoResponse getTokenInfo(String authorizationCode) {
         return appleClient.getIdToken(
                 appleProperties.getClientId(),
                 generateClientSecret(),
                 appleProperties.getGrantType(),
                 authorizationCode
-        ).accessToken();
+        );
     }
 
-    public void revoke(String accessToken) {
+    public void revoke(String refreshToken) {
         try {
             appleClient.revoke(
                     appleProperties.getClientId(),
                     generateClientSecret(),
-                    accessToken,
-                    "access_token"
+                    refreshToken,
+                    "refresh_token"
             );
         } catch (Exception e) {
             throw new AppleTokenRevokeException(e);

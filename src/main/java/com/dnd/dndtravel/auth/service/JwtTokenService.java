@@ -18,14 +18,14 @@ public class JwtTokenService {
 	private final RefreshTokenRepository refreshTokenRepository;
 
 	@Transactional
-	public TokenResponse generateTokens(Long memberId) {
+	public TokenResponse generateTokens(Long memberId, String appleRefreshToken) {
 		RefreshToken refreshToken = refreshTokenRepository.findByMemberId(memberId);
 
 		// 리프레시 토큰이 없는경우
 		if (refreshToken == null) {
 			String newRefreshToken = jwtProvider.refreshToken();
 			refreshTokenRepository.save(RefreshToken.of(memberId, newRefreshToken)); // refreshToken은 DB에 저장
-			return new TokenResponse(jwtProvider.accessToken(memberId), newRefreshToken);
+			return new TokenResponse(jwtProvider.accessToken(memberId), newRefreshToken, appleRefreshToken);
 		}
 		
 		// 리프레시 토큰이 만료됐으면 재발급 받으라고 멘트줌
@@ -37,7 +37,7 @@ public class JwtTokenService {
 		refreshTokenRepository.delete(refreshToken);
 		String newRefreshToken = jwtProvider.refreshToken();
 		refreshTokenRepository.save(RefreshToken.of(refreshToken.getMemberId(), newRefreshToken));
-		return new TokenResponse(jwtProvider.accessToken(memberId), newRefreshToken);
+		return new TokenResponse(jwtProvider.accessToken(memberId), newRefreshToken, appleRefreshToken);
 	}
 
 	@Transactional
