@@ -48,17 +48,6 @@ public class AppleOAuthService {
     private final AppleClient appleClient;
     private final AppleProperties appleProperties;
 
-    public AppleIdTokenPayload get(String authorizationCode) {
-        String idToken = appleClient.getIdToken(
-            appleProperties.getClientId(),
-            generateClientSecret(),
-            appleProperties.getGrantType(),
-            authorizationCode
-        ).idToken();
-
-        return TokenDecoder.decodePayload(idToken, AppleIdTokenPayload.class);
-    }
-
     private String generateClientSecret() {
         LocalDateTime expiration = LocalDateTime.now().plusMinutes(5);
 
@@ -87,23 +76,22 @@ public class AppleOAuthService {
         }
     }
 
-    public String getAccessToken(String authorizationCode) {
-        AppleSocialTokenInfoResponse tokenInfo = appleClient.getIdToken(
+    public AppleSocialTokenInfoResponse getTokenInfo(String authorizationCode) {
+        return appleClient.getIdToken(
                 appleProperties.getClientId(),
                 generateClientSecret(),
                 appleProperties.getGrantType(),
                 authorizationCode
         );
-        return tokenInfo.accessToken();
     }
 
-    public void revoke(String accessToken) {
+    public void revoke(String refreshToken) {
         try {
             appleClient.revoke(
                     appleProperties.getClientId(),
                     generateClientSecret(),
-                    accessToken,
-                    "access_token"
+                    refreshToken,
+                    "refresh_token"
             );
         } catch (Exception e) {
             throw new AppleTokenRevokeException(e);

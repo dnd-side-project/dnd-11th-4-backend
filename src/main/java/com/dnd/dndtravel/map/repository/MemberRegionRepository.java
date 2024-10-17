@@ -8,6 +8,6 @@ import com.dnd.dndtravel.map.domain.MemberRegion;
 
 public interface MemberRegionRepository extends JpaRepository<MemberRegion, Long> {
 	List<MemberRegion> findByMemberId(Long memberId);
-
+	void deleteByMemberId(Long memberId);
 	MemberRegion findByMemberIdAndRegionId(Long memberId, Long regionId);
 }

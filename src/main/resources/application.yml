@@ -48,4 +48,3 @@ cloud:
       auto: false
     s3:
       bucketName: ${AWS_BUCKET_NAME}
-
