@@ -44,21 +44,9 @@ import com.dnd.dndtravel.auth.config.AppleProperties;
 
 @RequiredArgsConstructor
 @Component
-@Slf4j
 public class AppleOAuthService {
     private final AppleClient appleClient;
     private final AppleProperties appleProperties;
-
-    public AppleIdTokenPayload get(String authorizationCode) {
-        String idToken = appleClient.getIdToken(
-            appleProperties.getClientId(),
-            generateClientSecret(),
-            appleProperties.getGrantType(),
-            authorizationCode
-        ).idToken();
-
-        return TokenDecoder.decodePayload(idToken, AppleIdTokenPayload.class);
-    }
 
     private String generateClientSecret() {
         LocalDateTime expiration = LocalDateTime.now().plusMinutes(5);
