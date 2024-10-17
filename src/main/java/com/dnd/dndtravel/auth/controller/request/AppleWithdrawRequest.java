@@ -11,7 +11,7 @@ import jakarta.validation.constraints.Size;
  */
 public record AppleWithdrawRequest(
         @Schema(description = "Apple Refresh Token", requiredMode = REQUIRED)
-        @NotBlank(message = "appleRefreshTokend은 필수 입니다.")
+        @NotBlank(message = "appleRefreshToken은 필수 입니다.")
         @Size(max = 300, message = "token 형식이 아닙니다.")
         String appleRefreshToken
 ) {
