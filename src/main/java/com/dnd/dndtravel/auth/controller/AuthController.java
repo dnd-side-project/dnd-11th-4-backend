@@ -53,13 +53,11 @@ public class AuthController implements AuthControllerSwagger {
     }
 
     @DeleteMapping("/withdraw")
-    public ResponseEntity<Void> withdraw(@RequestBody AppleWithdrawRequest withdrawRequest, AuthenticationMember authenticationMember) {
+    public void withdraw(@RequestBody AppleWithdrawRequest withdrawRequest, AuthenticationMember authenticationMember) {
         // 애플 서버에 탈퇴 요청
         appleOAuthService.revoke(withdrawRequest.appleRefreshToken());
 
         // 자체 회원 탈퇴
         memberService.withdrawMember(authenticationMember.id());
-
-        return ResponseEntity.ok().build();
     }
 }

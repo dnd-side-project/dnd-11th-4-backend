@@ -84,7 +84,7 @@ public interface AuthControllerSwagger {
 					)
 			)
 	})
-	ResponseEntity<Void> withdraw(
+	void withdraw(
 			@Parameter(description = "요청 정보(authorization code)", required = true)
 					AppleWithdrawRequest appleWithdrawRequest,
 			@Parameter(hidden = true)
