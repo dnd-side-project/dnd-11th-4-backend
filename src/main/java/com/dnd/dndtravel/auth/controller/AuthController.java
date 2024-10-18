@@ -15,6 +15,7 @@ import com.dnd.dndtravel.config.AuthenticationMember;
 import com.dnd.dndtravel.member.domain.Member;
 import com.dnd.dndtravel.member.service.MemberService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class AuthController implements AuthControllerSwagger {
     private final MemberService memberService;
 
     @PostMapping("/login/oauth2/apple")
-    public ResponseEntity<TokenResponse> appleOAuthLogin(@RequestBody AppleLoginRequest appleLoginRequest) {
+    public ResponseEntity<TokenResponse> appleOAuthLogin(@Valid @RequestBody AppleLoginRequest appleLoginRequest) {
         // 클라이언트에서 준 code 값으로 apple의 IdToken Payload를 얻어온다
         AppleSocialTokenInfoResponse tokenInfo = appleOAuthService.getTokenInfo(appleLoginRequest.appleToken());
         AppleIdTokenPayload tokenPayload = TokenDecoder.decodePayload(tokenInfo.idToken(), AppleIdTokenPayload.class);
@@ -48,12 +49,12 @@ public class AuthController implements AuthControllerSwagger {
     }
 
     @PostMapping("/reissue/token")
-    public ReissueTokenResponse reissueToken(@RequestBody ReIssueTokenRequest reissueTokenRequest) {
+    public ReissueTokenResponse reissueToken(@Valid @RequestBody ReIssueTokenRequest reissueTokenRequest) {
         return jwtTokenService.reIssue(reissueTokenRequest.refreshToken());
     }
 
     @DeleteMapping("/withdraw")
-    public void withdraw(@RequestBody AppleWithdrawRequest withdrawRequest, AuthenticationMember authenticationMember) {
+    public void withdraw(@Valid @RequestBody AppleWithdrawRequest withdrawRequest, AuthenticationMember authenticationMember) {
         // 애플 서버에 탈퇴 요청
         appleOAuthService.revoke(withdrawRequest.appleRefreshToken());
 
