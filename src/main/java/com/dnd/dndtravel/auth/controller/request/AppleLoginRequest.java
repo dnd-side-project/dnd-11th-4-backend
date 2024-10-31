@@ -13,7 +13,7 @@ public record AppleLoginRequest(
 	@Schema(description = "authorization code", requiredMode = REQUIRED)
 	@NotBlank(message = "authorization code는 필수 입니다.")
 	@Size(max = 300, message = "authorization code 형식이 아닙니다")
-	String appleToken,
+	String authorizationCode,
 
 	@Schema(description = "유저가 선택한 색상", requiredMode = REQUIRED)
 	@ColorValidation(enumClass = SelectedColor.class)

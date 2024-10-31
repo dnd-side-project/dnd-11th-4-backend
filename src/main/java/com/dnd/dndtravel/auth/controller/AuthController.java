@@ -1,12 +1,14 @@
 package com.dnd.dndtravel.auth.controller;
 
+import java.util.Optional;
+
 import com.dnd.dndtravel.auth.controller.request.AppleWithdrawRequest;
 import com.dnd.dndtravel.auth.controller.request.ReIssueTokenRequest;
 import com.dnd.dndtravel.auth.controller.swagger.AuthControllerSwagger;
-import com.dnd.dndtravel.auth.service.dto.response.AppleIdTokenPayload;
 import com.dnd.dndtravel.auth.service.AppleOAuthService;
 import com.dnd.dndtravel.auth.service.JwtTokenService;
 import com.dnd.dndtravel.auth.controller.request.AppleLoginRequest;
+import com.dnd.dndtravel.auth.service.dto.response.AppleTokenResponse;
 import com.dnd.dndtravel.auth.service.dto.response.TokenResponse;
 import com.dnd.dndtravel.auth.service.dto.response.ReissueTokenResponse;
 import com.dnd.dndtravel.config.AuthenticationMember;
@@ -27,22 +29,17 @@ public class AuthController implements AuthControllerSwagger {
     private final MemberService memberService;
 
     @PostMapping("/login/oauth2/apple")
-    public ResponseEntity<TokenResponse> appleOAuthLogin(@RequestBody AppleLoginRequest appleLoginRequest) {
-        // 클라이언트에서 준 code 값으로 apple의 IdToken Payload를 얻어온다
-        AppleIdTokenPayload tokenPayload = appleOAuthService.get(appleLoginRequest.appleToken());
+    public ResponseEntity<TokenResponse> appleOAuthLogin(@RequestBody @Valid AppleLoginRequest appleLoginRequest) {
+        // idToken 정보와 애플의 RefreshToken 얻기위해 Apple API 호출
+        AppleTokenResponse appleTokenResponse = appleOAuthService.get(appleLoginRequest.authorizationCode());
 
-        // apple에서 가져온 유저정보를 DB에 저장
-        Member member = memberService.saveMember(tokenPayload.email(), appleLoginRequest.selectedColor());
+        Member member = memberService.saveMember(
+            appleTokenResponse.email(),
+            appleTokenResponse.sub(),
+            appleLoginRequest.selectedColor()
+        );
 
-        // 클라이언트와 주고받을 user token(access , refresh) 생성
-        TokenResponse tokenResponse = jwtTokenService.generateTokens(member.getId());
-
-        // refresh token 재발급 필요시
-        if (tokenResponse == null) {
-            return ResponseEntity.noContent().build();
-        }
-
-        return ResponseEntity.ok(tokenResponse);
+        return generateTokenResponse(appleTokenResponse.appleRefreshToken(), member.getId());
     }
 
     @PostMapping("/reissue/token")
@@ -60,5 +57,13 @@ public class AuthController implements AuthControllerSwagger {
 
         // 3. 자체 회원 탈퇴 진행
         memberService.withdrawMember(authenticationMember.id());
+    }
+
+    private ResponseEntity<TokenResponse> generateTokenResponse(String appleRefreshToken, Long memberId) {
+        TokenResponse tokenResponse = jwtTokenService.generateTokens(memberId, appleRefreshToken);
+
+        return Optional.ofNullable(tokenResponse)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.noContent().build());
     }
 }

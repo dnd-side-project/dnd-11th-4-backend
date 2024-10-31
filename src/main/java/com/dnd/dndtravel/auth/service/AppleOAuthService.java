@@ -5,7 +5,6 @@ import com.dnd.dndtravel.auth.service.dto.response.AppleSocialTokenInfoResponse;
 import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.springframework.stereotype.Component;
@@ -20,6 +19,7 @@ import java.util.Date;
 
 import com.dnd.dndtravel.auth.service.dto.response.AppleIdTokenPayload;
 import com.dnd.dndtravel.auth.config.AppleProperties;
+import com.dnd.dndtravel.auth.service.dto.response.AppleTokenResponse;
 
 /**
  * private key와 기타 설정값들로 client secret을 생성한다
@@ -48,15 +48,39 @@ public class AppleOAuthService {
     private final AppleClient appleClient;
     private final AppleProperties appleProperties;
 
-    public AppleIdTokenPayload get(String authorizationCode) {
-        String idToken = appleClient.getIdToken(
+    public AppleTokenResponse get(String authorizationCode) {
+        AppleSocialTokenInfoResponse appleSocialTokenInfoResponse = appleClient.getIdToken(
             appleProperties.getClientId(),
             generateClientSecret(),
             appleProperties.getGrantType(),
             authorizationCode
-        ).idToken();
+        );
 
-        return TokenDecoder.decodePayload(idToken, AppleIdTokenPayload.class);
+        AppleIdTokenPayload appleIdTokenPayload = TokenDecoder.decodePayload(appleSocialTokenInfoResponse.idToken(), AppleIdTokenPayload.class);
+        return AppleTokenResponse.of(appleIdTokenPayload, appleSocialTokenInfoResponse.refreshToken());
+    }
+
+    public String getAccessToken(String authorizationCode) {
+        AppleSocialTokenInfoResponse tokenInfo = appleClient.getIdToken(
+            appleProperties.getClientId(),
+            generateClientSecret(),
+            appleProperties.getGrantType(),
+            authorizationCode
+        );
+        return tokenInfo.accessToken();
+    }
+
+    public void revoke(String accessToken) {
+        try {
+            appleClient.revoke(
+                appleProperties.getClientId(),
+                generateClientSecret(),
+                accessToken,
+                "access_token"
+            );
+        } catch (Exception e) {
+            throw new AppleTokenRevokeException(e);
+        }
     }
 
     private String generateClientSecret() {
@@ -84,29 +108,6 @@ public class AppleOAuthService {
             return converter.getPrivateKey(privateKeyInfo);
         } catch (Exception e) {
             throw new RuntimeException("Error converting private key from String", e);
-        }
-    }
-
-    public String getAccessToken(String authorizationCode) {
-        AppleSocialTokenInfoResponse tokenInfo = appleClient.getIdToken(
-                appleProperties.getClientId(),
-                generateClientSecret(),
-                appleProperties.getGrantType(),
-                authorizationCode
-        );
-        return tokenInfo.accessToken();
-    }
-
-    public void revoke(String accessToken) {
-        try {
-            appleClient.revoke(
-                    appleProperties.getClientId(),
-                    generateClientSecret(),
-                    accessToken,
-                    "access_token"
-            );
-        } catch (Exception e) {
-            throw new AppleTokenRevokeException(e);
         }
     }
 }
