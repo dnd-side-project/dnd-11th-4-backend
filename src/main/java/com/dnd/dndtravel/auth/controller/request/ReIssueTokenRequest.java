@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public record ReIssueTokenRequest(
-	@Schema(description = "refresh token", requiredMode = REQUIRED)
+	@Schema(description = "mapddang refresh token", requiredMode = REQUIRED)
 	@NotBlank(message = "refresh token은 필수 입니다.")
 	@Size(max = 300, message = "refresh token 형식이 아닙니다.")
 	String refreshToken

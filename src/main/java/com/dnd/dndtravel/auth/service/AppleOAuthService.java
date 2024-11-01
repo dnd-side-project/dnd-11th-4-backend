@@ -1,6 +1,6 @@
 package com.dnd.dndtravel.auth.service;
 
-import com.dnd.dndtravel.auth.exception.AppleTokenRevokeException;
+import com.dnd.dndtravel.auth.exception.RequireReAuthenticationException;
 import com.dnd.dndtravel.auth.service.dto.response.AppleSocialTokenInfoResponse;
 import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
@@ -60,26 +60,17 @@ public class AppleOAuthService {
         return AppleTokenResponse.of(appleIdTokenPayload, appleSocialTokenInfoResponse.refreshToken());
     }
 
-    public String getAccessToken(String authorizationCode) {
-        AppleSocialTokenInfoResponse tokenInfo = appleClient.getIdToken(
-            appleProperties.getClientId(),
-            generateClientSecret(),
-            appleProperties.getGrantType(),
-            authorizationCode
-        );
-        return tokenInfo.accessToken();
-    }
-
-    public void revoke(String accessToken) {
+    public void revoke(String refreshToken) {
         try {
             appleClient.revoke(
                 appleProperties.getClientId(),
                 generateClientSecret(),
-                accessToken,
-                "access_token"
+                refreshToken,
+                "refresh_token"
             );
         } catch (Exception e) {
-            throw new AppleTokenRevokeException(e);
+            // invalid_grant 응답메시지로, 정확한 예외Response 확인후 Refresh Token 만료되었다는 예외라면 재인증 요청하게끔 하는 코드로 수정하는것을 권장
+            throw new RequireReAuthenticationException(e);
         }
     }
 
