@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 public class MemberService {
-
     private final MemberRepository memberRepository;
     private final MemberAttractionRepository memberAttractionRepository;
     private final MemberRegionRepository memberRegionRepository;
