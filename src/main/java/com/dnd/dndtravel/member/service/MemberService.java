@@ -14,9 +14,12 @@ import com.dnd.dndtravel.member.repository.MemberRepository;
 import com.dnd.dndtravel.member.service.response.MyPageResponse;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class MemberService {
@@ -58,6 +61,7 @@ public class MemberService {
     }
 
     private String getWithdrawMemberEmail(String sub) {
+        log.info("sub = {}" + sub);
         return withDrawMemberRepository.findByAppleId(sub)
             .orElseThrow(() -> new MemberNotFoundException(sub))
             .getEmail();
