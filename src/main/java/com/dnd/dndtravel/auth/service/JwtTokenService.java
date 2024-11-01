@@ -18,37 +18,49 @@ public class JwtTokenService {
 	private final RefreshTokenRepository refreshTokenRepository;
 
 	@Transactional
-	public TokenResponse generateTokens(Long memberId) {
+	public TokenResponse generateTokens(Long memberId, String appleRefreshToken) {
 		RefreshToken refreshToken = refreshTokenRepository.findByMemberId(memberId);
 
 		// 리프레시 토큰이 없는경우
 		if (refreshToken == null) {
-			String newRefreshToken = jwtProvider.refreshToken();
-			refreshTokenRepository.save(RefreshToken.of(memberId, newRefreshToken)); // refreshToken은 DB에 저장
-			return new TokenResponse(jwtProvider.accessToken(memberId), newRefreshToken);
+			return createNewTokens(memberId, appleRefreshToken);
 		}
 		
-		// 리프레시 토큰이 만료됐으면 재발급 받으라고 멘트줌
+		// 리프레시 토큰이 만료됐으면 재발급
 		if (refreshToken.isExpire()) {
 			return null;
 		}
 		
 		// 리프레시 토큰이 DB에 존재하고 유효한경우
-		refreshTokenRepository.delete(refreshToken);
-		String newRefreshToken = jwtProvider.refreshToken();
-		refreshTokenRepository.save(RefreshToken.of(refreshToken.getMemberId(), newRefreshToken));
-		return new TokenResponse(jwtProvider.accessToken(memberId), newRefreshToken);
+		return rotateTokens(memberId, appleRefreshToken, refreshToken);
 	}
 
 	@Transactional
 	public ReissueTokenResponse reIssue(String token) {
-		//validation
-		RefreshToken refreshToken = refreshTokenRepository.findByRefreshToken(token).orElseThrow(() -> new RefreshTokenInvalidException(token));
+		RefreshToken oldRefreshToken = refreshTokenRepository.findByRefreshToken(token).orElseThrow(() -> new RefreshTokenInvalidException(token));
+		String newRefreshToken = rotateRefreshToken(oldRefreshToken);
+		String newAccessToken = jwtProvider.accessToken(oldRefreshToken.getMemberId());
 
-		//RTR
-		refreshTokenRepository.delete(refreshToken);
+		return new ReissueTokenResponse(newAccessToken, newRefreshToken);
+	}
+
+	private String rotateRefreshToken(RefreshToken oldRefreshToken) {
+		refreshTokenRepository.delete(oldRefreshToken);
 		String newRefreshToken = jwtProvider.refreshToken();
-		refreshTokenRepository.save(RefreshToken.of(refreshToken.getMemberId(), newRefreshToken));
-		return new ReissueTokenResponse(jwtProvider.accessToken(refreshToken.getMemberId()), newRefreshToken);
+		refreshTokenRepository.save(RefreshToken.of(oldRefreshToken.getMemberId(), newRefreshToken));
+		return newRefreshToken;
+	}
+
+	private TokenResponse rotateTokens(Long memberId, String appleRefreshToken, RefreshToken refreshToken) {
+		String newRefreshToken = rotateRefreshToken(refreshToken);
+
+		return new TokenResponse(jwtProvider.accessToken(memberId), newRefreshToken, appleRefreshToken);
+	}
+
+	private TokenResponse createNewTokens(Long memberId, String appleRefreshToken) {
+		String newRefreshToken = jwtProvider.refreshToken();
+		refreshTokenRepository.save(RefreshToken.of(memberId, newRefreshToken)); // refreshToken은 DB에 저장
+
+		return new TokenResponse(jwtProvider.accessToken(memberId), newRefreshToken, appleRefreshToken);
 	}
 }
