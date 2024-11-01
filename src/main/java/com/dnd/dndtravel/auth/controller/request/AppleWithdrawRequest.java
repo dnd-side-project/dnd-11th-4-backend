@@ -10,6 +10,6 @@ public record AppleWithdrawRequest(
         @Schema(description = "애플 refreshToken", requiredMode = REQUIRED)
         @NotBlank(message = "refreshToken은 필수 입니다.")
         @Size(max = 300, message = "refreshToken 형식이 아닙니다.")
-        String refreshToken
+        String appleRefreshToken
 ) {
 }

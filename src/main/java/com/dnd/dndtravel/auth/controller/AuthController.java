@@ -39,6 +39,6 @@ public class AuthController implements AuthControllerSwagger {
         @RequestBody @Valid AppleWithdrawRequest withdrawRequest,
         AuthenticationMember authenticationMember
     ) {
-        authService.processAppleRevoke(withdrawRequest.refreshToken(), authenticationMember.id());
+        authService.processAppleRevoke(withdrawRequest.appleRefreshToken(), authenticationMember.id());
     }
 }
