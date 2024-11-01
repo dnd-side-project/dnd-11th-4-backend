@@ -1,11 +1,10 @@
 package com.dnd.dndtravel.auth.service;
 
-import com.dnd.dndtravel.auth.exception.AppleTokenRevokeException;
+import com.dnd.dndtravel.auth.exception.RequireReAuthenticationException;
 import com.dnd.dndtravel.auth.service.dto.response.AppleSocialTokenInfoResponse;
 import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.springframework.stereotype.Component;
@@ -20,6 +19,7 @@ import java.util.Date;
 
 import com.dnd.dndtravel.auth.service.dto.response.AppleIdTokenPayload;
 import com.dnd.dndtravel.auth.config.AppleProperties;
+import com.dnd.dndtravel.auth.service.dto.response.AppleTokenResponse;
 
 /**
  * private key와 기타 설정값들로 client secret을 생성한다
@@ -48,15 +48,30 @@ public class AppleOAuthService {
     private final AppleClient appleClient;
     private final AppleProperties appleProperties;
 
-    public AppleIdTokenPayload get(String authorizationCode) {
-        String idToken = appleClient.getIdToken(
+    public AppleTokenResponse get(String authorizationCode) {
+        AppleSocialTokenInfoResponse appleSocialTokenInfoResponse = appleClient.getIdToken(
             appleProperties.getClientId(),
             generateClientSecret(),
             appleProperties.getGrantType(),
             authorizationCode
-        ).idToken();
+        );
 
-        return TokenDecoder.decodePayload(idToken, AppleIdTokenPayload.class);
+        AppleIdTokenPayload appleIdTokenPayload = TokenDecoder.decodePayload(appleSocialTokenInfoResponse.idToken(), AppleIdTokenPayload.class);
+        return AppleTokenResponse.of(appleIdTokenPayload, appleSocialTokenInfoResponse.refreshToken());
+    }
+
+    public void revoke(String refreshToken) {
+        try {
+            appleClient.revoke(
+                appleProperties.getClientId(),
+                generateClientSecret(),
+                refreshToken,
+                "refresh_token"
+            );
+        } catch (Exception e) {
+            // invalid_grant 응답메시지로, 정확한 예외Response 확인후 Refresh Token 만료되었다는 예외라면 재인증 요청하게끔 하는 코드로 수정하는것을 권장
+            throw new RequireReAuthenticationException(e);
+        }
     }
 
     private String generateClientSecret() {
@@ -84,29 +99,6 @@ public class AppleOAuthService {
             return converter.getPrivateKey(privateKeyInfo);
         } catch (Exception e) {
             throw new RuntimeException("Error converting private key from String", e);
-        }
-    }
-
-    public String getAccessToken(String authorizationCode) {
-        AppleSocialTokenInfoResponse tokenInfo = appleClient.getIdToken(
-                appleProperties.getClientId(),
-                generateClientSecret(),
-                appleProperties.getGrantType(),
-                authorizationCode
-        );
-        return tokenInfo.accessToken();
-    }
-
-    public void revoke(String accessToken) {
-        try {
-            appleClient.revoke(
-                    appleProperties.getClientId(),
-                    generateClientSecret(),
-                    accessToken,
-                    "access_token"
-            );
-        } catch (Exception e) {
-            throw new AppleTokenRevokeException(e);
         }
     }
 }

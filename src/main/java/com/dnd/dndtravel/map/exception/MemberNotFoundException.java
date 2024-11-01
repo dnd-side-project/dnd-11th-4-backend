@@ -6,4 +6,8 @@ public class MemberNotFoundException extends RuntimeException {
 	public MemberNotFoundException(long memberId) {
 		super(String.format(MESSAGE, memberId));
 	}
+
+	public MemberNotFoundException(String appleId) {
+		super(String.format(MESSAGE, appleId));
+	}
 }
