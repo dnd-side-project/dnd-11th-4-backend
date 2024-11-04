@@ -36,9 +36,8 @@ public class MemberService {
         log.info("email = {}", email);
         log.info("sub = {}", sub);
         String targetEmail = Optional.ofNullable(email).orElseGet(() -> getWithdrawMemberEmail(sub));
-
         if (isNewLoginMember(email)) {
-            withDrawMemberRepository.save(WithdrawMember.of(sub));
+            withDrawMemberRepository.save(WithdrawMember.of(sub, email));
         }
 
         return memberRepository.findByEmail(targetEmail)
@@ -72,5 +71,4 @@ public class MemberService {
     private boolean isNewLoginMember(String email) {
         return email != null;
     }
-
 }

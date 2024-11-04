@@ -30,11 +30,12 @@ public class WithdrawMember {
 	@Column(nullable = false)
 	private String email;
 
-	private WithdrawMember(String appleId) {
+	private WithdrawMember(String appleId, String email) {
 		this.appleId = appleId;
+		this.email = email;
 	}
 
-	public static WithdrawMember of(String appleId) {
-		return new WithdrawMember(appleId);
+	public static WithdrawMember of(String appleId, String email) {
+		return new WithdrawMember(appleId, email);
 	}
 }
