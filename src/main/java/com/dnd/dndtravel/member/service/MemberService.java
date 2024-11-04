@@ -33,6 +33,8 @@ public class MemberService {
     @Transactional
     public Member saveMember(String email, String sub, String selectedColor) {
         // 재가입 유저
+        log.info("email = {}", email);
+        log.info("sub = {}", sub);
         String targetEmail = Optional.ofNullable(email).orElseGet(() -> getWithdrawMemberEmail(sub));
 
         if (isNewLoginMember(email)) {
