@@ -72,7 +72,7 @@ public class MapController implements MapControllerSwagger {
 	/**
 	 * org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'DELETE' is not supported 예외로 인해 PostMapping으로 변경
 	 */
-	@PostMapping("/maps/history/{recordId}")
+	@DeleteMapping("/maps/history/{recordId}")
 	public void deleteRecord(
 		AuthenticationMember authenticationMember,
 		@PathVariable long recordId
