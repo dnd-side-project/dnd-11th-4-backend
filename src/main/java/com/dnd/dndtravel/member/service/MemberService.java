@@ -91,8 +91,8 @@ public class MemberService {
         }
 
         // 케이스 2, 4: 이메일이 있는 경우
-        String withdrawnEmail = withDrawMemberRepository.findByEmail(email);
-        return withdrawnEmail == null ? email : withdrawnEmail;
+        WithdrawMember withdrawMember = withDrawMemberRepository.findByEmail(email);
+        return withdrawMember.getEmail() == null ? email : withdrawMember.getEmail();
     }
 
     private void validateNewMemberEmail(String email, String sub) {
