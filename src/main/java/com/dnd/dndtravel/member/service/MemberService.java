@@ -48,9 +48,6 @@ public class MemberService {
         log.info("sub = {}", sub);
         validateNewMemberEmail(email, sub);
         String targetEmail = determineEmail(email, sub);
-        if (targetEmail.equals(email)) {
-            withDrawMemberRepository.save(WithdrawMember.of(sub, email));
-        }
         return memberRepository.save(
             Member.of(
                 memberNameGenerator.generateRandomName(),
@@ -92,7 +89,14 @@ public class MemberService {
 
         // 케이스 2, 4: 이메일이 있는 경우
         WithdrawMember withdrawMember = withDrawMemberRepository.findByEmail(email);
-        return withdrawMember.getEmail() == null ? email : withdrawMember.getEmail();
+
+        //최초 가입인경우
+        if (withdrawMember == null) {
+            WithdrawMember withdrawMember1 = withDrawMemberRepository.save(WithdrawMember.of(sub, email));
+            return withdrawMember1.getEmail();
+        }
+        // 탈퇴후
+        return withdrawMember.getEmail();
     }
 
     private void validateNewMemberEmail(String email, String sub) {
