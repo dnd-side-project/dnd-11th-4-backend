@@ -11,6 +11,9 @@ public class PhotoValidator implements ConstraintValidator<PhotoValidation, List
 
 	@Override
 	public boolean isValid(List<MultipartFile> photos, ConstraintValidatorContext context) {
-		return photos.size() <= 3;
+		if (photos != null && photos.size() > 3) {
+			return false;
+		}
+		return true;
 	}
 }
