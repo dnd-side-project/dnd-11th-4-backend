@@ -7,6 +7,7 @@ import com.dnd.dndtravel.map.repository.MemberRegionRepository;
 import com.dnd.dndtravel.auth.service.MemberNameGenerator;
 import com.dnd.dndtravel.map.repository.WithdrawMemberRepository;
 import com.dnd.dndtravel.member.domain.Member;
+import com.dnd.dndtravel.member.domain.WithdrawMember;
 import com.dnd.dndtravel.member.repository.MemberRepository;
 import com.dnd.dndtravel.member.service.response.MyPageResponse;
 
@@ -47,6 +48,9 @@ public class MemberService {
         log.info("sub = {}", sub);
         validateNewMemberEmail(email, sub);
         String targetEmail = determineEmail(email, sub);
+        if (targetEmail.equals(email)) {
+            withDrawMemberRepository.save(WithdrawMember.of(sub, email));
+        }
         return memberRepository.save(
             Member.of(
                 memberNameGenerator.generateRandomName(),
