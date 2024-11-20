@@ -8,4 +8,8 @@ import com.dnd.dndtravel.member.domain.WithdrawMember;
 
 public interface WithdrawMemberRepository extends JpaRepository<WithdrawMember, Long> {
 	Optional<WithdrawMember> findByAppleId(String sub);
+
+	String findByEmail(String email);
+
+	boolean existsByAppleId(String sub);
 }
