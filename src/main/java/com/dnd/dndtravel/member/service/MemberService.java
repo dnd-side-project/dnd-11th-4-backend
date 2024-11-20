@@ -101,7 +101,7 @@ public class MemberService {
 
     private void validateNewMemberEmail(String email, String sub) {
         // 최로 로그인 유저인데 IdToken의 email도 null인경우 (케이스 3)
-        if (email == null && withDrawMemberRepository.existsByAppleId(sub)) {
+        if (email == null && !withDrawMemberRepository.existsByAppleId(sub)) {
             throw new MemberNotFoundException(sub);
         }
     }
