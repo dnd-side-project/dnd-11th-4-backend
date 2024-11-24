@@ -14,7 +14,6 @@ import lombok.Getter;
 @Getter
 public class RecordProjection {
 	private final long memberAttractionId;
-	private String attractionName;
 	private final String memo;
 	private final LocalDate visitDate;
 	private final String region;
@@ -39,7 +38,7 @@ public class RecordProjection {
 		}
 	}
 
-	public void inputAttractionNames() {
-		this.attractionName = this.attraction.getName();
+	public String getAttractionName() {
+		return this.attraction.getName();
 	}
 }

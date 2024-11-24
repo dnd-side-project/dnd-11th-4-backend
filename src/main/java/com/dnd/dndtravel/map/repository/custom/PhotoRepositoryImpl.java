@@ -28,7 +28,6 @@ public class PhotoRepositoryImpl implements PhotoRepositoryCustom {
 					memberAttraction.id,
 					photo.url))
 			.from(photo)
-			.join(photo.memberAttraction, memberAttraction)
 			.where(photo.memberAttraction.id.in(memberAttractionIds))
 			.fetch();
 	}

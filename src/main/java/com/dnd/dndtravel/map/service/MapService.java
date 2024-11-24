@@ -91,23 +91,17 @@ public class MapService {
 	// 모든 기록 조회
 	@Transactional(readOnly = true)
 	public AttractionRecordsResponse allRecords(long memberId, long cursorNo, int displayPerPage) {
-		//validation
-		Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException(memberId));
-		List<MemberAttraction> memberAttractions = memberAttractionRepository.findByMemberId(memberId);
-		if (memberAttractions.isEmpty()) {
+		//전체 방문 기록 수 조회
+		Long visitCount = memberAttractionRepository.entireVisitCount(memberId);
+
+		//방문기록이 없는경우
+		if (visitCount == 0) {
 			return new AttractionRecordsResponse(0, List.of());
 		}
 
-		// 첫 커서값인 경우
-		if (cursorNo <= 0) {
-			cursorNo = memberAttractionRepository.maxCursor(member.getId());
-		}
 		List<RecordProjection> attractionRecords = memberAttractionRepository.findAttractionRecords(memberId, cursorNo, displayPerPage);
-		Long visitCount = memberAttractionRepository.entireVisitCount(memberId);
 
-		// 명소명 저장
-		attractionRecords.forEach(RecordProjection::inputAttractionNames);
-		// 사진 URL 저장
+		//사진 URL 저장
 		setPhotoUrlsWithJoin(attractionRecords);
 
 		return new AttractionRecordsResponse(visitCount, attractionRecords.stream()
