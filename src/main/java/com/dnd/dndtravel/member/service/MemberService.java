@@ -43,18 +43,20 @@ public class MemberService {
      */
     @Transactional
     public Member saveMember(String email, String sub, String selectedColor) {
-        // 재가입 유저
         log.info("email = {}", email);
         log.info("sub = {}", sub);
-        validateNewMemberEmail(email, sub);
-        String targetEmail = determineEmail(email, sub);
-        return memberRepository.save(
-            Member.of(
-                memberNameGenerator.generateRandomName(),
-                targetEmail,
-                selectedColor
-            )
-        );
+        WithdrawMember existingMember = withDrawMemberRepository.findByAppleId(sub);
+        // 새 유저
+        if (existingMember == null) {
+            return handleNewMember(email, sub, selectedColor);
+        }
+
+        // 가입이력 있던 유저는 withDraw에 있던 정보로 회원테이블에 저장하면 됨, private public 상관없이 최초 로그인하던 이메일 저장
+        return memberRepository.save(Member.of(
+            memberNameGenerator.generateRandomName(),
+            existingMember.getEmail(),
+            selectedColor
+            ));
     }
 
     @Transactional
@@ -74,35 +76,17 @@ public class MemberService {
         return new MyPageResponse(member.getName());
     }
 
-    private String getWithdrawMemberEmail(String sub) {
-        log.info("sub = {}" + sub);
-        return withDrawMemberRepository.findByAppleId(sub)
-            .orElseThrow(() -> new MemberNotFoundException(sub))
-            .getEmail();
-    }
-
-    private String determineEmail(String email, String sub) {
-        // 케이스 1: 탈퇴 후 재가입 유저 (이메일 없음)
+    private Member handleNewMember(String email, String sub, String selectedColor) {
+        // idToken의 email이 null 인경우, 예외 => 일반적으로 있을 수 없는 상황
         if (email == null) {
-            return getWithdrawMemberEmail(sub);
-        }
-
-        // 케이스 2, 4: 이메일이 있는 경우
-        WithdrawMember withdrawMember = withDrawMemberRepository.findByEmail(email);
-
-        //최초 가입인경우
-        if (withdrawMember == null) {
-            WithdrawMember withdrawMember1 = withDrawMemberRepository.save(WithdrawMember.of(sub, email));
-            return withdrawMember1.getEmail();
-        }
-        // 탈퇴후
-        return withdrawMember.getEmail();
-    }
-
-    private void validateNewMemberEmail(String email, String sub) {
-        // 최로 로그인 유저인데 IdToken의 email도 null인경우 (케이스 3)
-        if (email == null && !withDrawMemberRepository.existsByAppleId(sub)) {
             throw new MemberNotFoundException(sub);
         }
+        // 새 유저의 idToken email을 DB에 저장
+        withDrawMemberRepository.save(WithdrawMember.of(sub, email));
+        return memberRepository.save(Member.of(
+            memberNameGenerator.generateRandomName(),
+            email,
+            selectedColor
+        ));
     }
 }
