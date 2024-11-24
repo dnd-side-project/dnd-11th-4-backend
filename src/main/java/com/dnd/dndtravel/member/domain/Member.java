@@ -8,6 +8,10 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Table(
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = "email")
+    })
 @Entity
 public class Member {
 
