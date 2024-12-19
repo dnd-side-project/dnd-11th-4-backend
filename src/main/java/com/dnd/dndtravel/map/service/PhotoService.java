@@ -45,7 +45,7 @@ public class PhotoService {
 	public void deleteS3Photo(List<String> existingUrls) {
 		for (String existingPhotoUrl : existingUrls) {
 			// 기존 이미지 URL에서 파일 이름 추출
-			String existingFileName = existingPhotoUrl.substring(existingPhotoUrl.lastIndexOf('/') + 1);;
+			String existingFileName = existingPhotoUrl.substring(existingPhotoUrl.lastIndexOf('/') + 1);
 
 			// S3에서 기존 이미지 삭제
 			try {

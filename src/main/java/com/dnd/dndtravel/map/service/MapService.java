@@ -172,6 +172,7 @@ public class MapService {
 		List<Photo> photos = photoRepository.findByMemberAttractionId(memberAttraction.getId());
 		photoRepository.deleteAll(photos);
 		memberAttractionRepository.delete(memberAttraction);
+		memberRegionRepository.deleteById(memberAttraction.getMember().getId());
 		attractionRepository.deleteById(memberAttraction.getAttraction().getId());
 	}
 

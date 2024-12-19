@@ -67,11 +67,6 @@ public class MapController implements MapControllerSwagger {
 		mapService.updateVisitRecord(updateRecordRequest.toDto(photos), authenticationMember.id(), recordId);
 	}
 
-	// 기록 삭제
-
-	/**
-	 * org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'DELETE' is not supported 예외로 인해 PostMapping으로 변경
-	 */
 	@DeleteMapping("/maps/history/{recordId}")
 	public void deleteRecord(
 		AuthenticationMember authenticationMember,
