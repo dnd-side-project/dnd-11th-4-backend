@@ -10,4 +10,6 @@ public interface MemberRegionRepository extends JpaRepository<MemberRegion, Long
 	List<MemberRegion> findByMemberId(Long memberId);
 
 	MemberRegion findByMemberIdAndRegionId(Long memberId, Long regionId);
+
+	void deleteByMemberId(Long memberId);
 }
