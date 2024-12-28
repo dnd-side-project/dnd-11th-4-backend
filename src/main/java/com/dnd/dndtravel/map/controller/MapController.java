@@ -74,4 +74,11 @@ public class MapController implements MapControllerSwagger {
 	) {
 		mapService.deleteRecord(authenticationMember.id(), recordId);
 	}
+
+	@DeleteMapping("/maps/history2/{recordId}")
+	public void deleteRecord(
+		@PathVariable long recordId
+	) {
+		mapService.deleteRecord(2, recordId);
+	}
 }
